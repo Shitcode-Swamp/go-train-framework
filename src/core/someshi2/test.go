@@ -10,3 +10,10 @@ func Init() *TestInjectee {
 
 	}
 } 
+
+// @Injection(testInjectee2)
+func Init2() *TestInjectee {
+	return &TestInjectee{
+
+	}
+}

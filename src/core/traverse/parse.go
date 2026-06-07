@@ -5,6 +5,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/Shitcode-Swamp/go-train/src/core/injection"
@@ -13,7 +14,7 @@ import (
 
 type Injections = map[string]*injection.Injector
 
-type Collector interface {
+type Tree interface {
 	Insert(injector *injection.Injector)
 }
 
@@ -21,20 +22,34 @@ type Parser interface {
 	ParseFuncParams(*ast.FuncType, *ast.File) []injection.Injectee
 }
 
-type FileTraverse struct {
-	collector Collector
-	parser Parser
+type Packages interface {
+	GetPackage(filePath string) (string, bool)
 }
 
-func NewFileTraverse(collector Collector, parser Parser) *FileTraverse {
+type FileTraverse struct {
+	collector Tree
+	parser    Parser
+	packages  Packages
+}
+
+func NewFileTraverse(
+	collector Tree,
+	parser Parser,
+	packages Packages,
+) *FileTraverse {
 	return &FileTraverse{
 		collector: collector,
-		parser: parser,
+		parser:    parser,
+		packages:  packages,
 	}
 }
 
 func (ft *FileTraverse) Parse(path string) error {
-	return ft.parseDir(path)
+	root, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+	return ft.parseDir(root)
 }
 
 func (ft *FileTraverse) parseDir(path string) error {
@@ -53,12 +68,12 @@ func (ft *FileTraverse) parseDir(path string) error {
 
 func (ft *FileTraverse) parseDirEntry(path string, entry os.DirEntry) error {
 	if entry.IsDir() {
-		return ft.parseDir(path+"/"+entry.Name())
-	} 
+		return ft.parseDir(path + "/" + entry.Name())
+	}
 	if !strings.HasSuffix(entry.Name(), ".go") {
 		return nil
 	}
-	return ft.parseFile(path+"/"+entry.Name())
+	return ft.parseFile(path + "/" + entry.Name())
 }
 
 func (ft *FileTraverse) parseFile(path string) error {
@@ -68,7 +83,7 @@ func (ft *FileTraverse) parseFile(path string) error {
 		return err
 	}
 	ast.Inspect(file, func(n ast.Node) bool {
-		injector := ft.inspectAstNode(n, file)
+		injector := ft.inspectAstNode(n, file, path)
 		if injector != nil {
 			ft.collector.Insert(injector)
 		}
@@ -77,7 +92,7 @@ func (ft *FileTraverse) parseFile(path string) error {
 	return nil
 }
 
-func (ft *FileTraverse) inspectAstNode(n ast.Node, file *ast.File) *injection.Injector {
+func (ft *FileTraverse) inspectAstNode(n ast.Node, file *ast.File, path string) *injection.Injector {
 	fDecl, ok := n.(*ast.FuncDecl)
 	if !ok {
 		return nil
@@ -87,8 +102,12 @@ func (ft *FileTraverse) inspectAstNode(n ast.Node, file *ast.File) *injection.In
 		return nil
 	}
 	injectees := ft.parser.ParseFuncParams(fDecl.Type, file)
+	pkg, ok := ft.packages.GetPackage(path)
+	if !ok {
+		return nil
+	}
 	return injection.NewInject(injectees).
 		WithToken(*token).
 		WithName(fDecl.Name.String()).
-		WithPackage(file.Name.String())
+		WithPackage(file.Name.String(), pkg)
 }

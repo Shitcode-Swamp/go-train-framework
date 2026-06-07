@@ -7,6 +7,7 @@ type TestStruct struct {
 // @Injection(test)
 func Init(
 	testField interface{} /* @Inject(testInjectee) */,
+	testField2 interface{} /* @Inject(testInjectee2) */,
 ) *TestStruct {
 	return &TestStruct{
 		TestField: testField,
