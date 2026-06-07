@@ -8,7 +8,13 @@ import (
 	utils_strings "github.com/Shitcode-Swamp/go-train/src/utils/strings"
 )
 
-func ParseFuncParams(v *ast.FuncType, file *ast.File) []injection.Injectee {
+type LexicalParser struct {}
+
+func NewLexicalParser() *LexicalParser {
+	return &LexicalParser{}
+}
+
+func (p *LexicalParser) ParseFuncParams(v *ast.FuncType, file *ast.File) []injection.Injectee {
 	params := v.Params
 	if params == nil {
 		return nil
@@ -23,7 +29,7 @@ func ParseFuncParams(v *ast.FuncType, file *ast.File) []injection.Injectee {
 			end = params.Closing
 		}
 
-		commentText := findComment(file.Comments, start, end)
+		commentText := p.findComment(file.Comments, start, end)
 		if commentText == "" && param.Comment != nil {
 			commentText = param.Comment.Text()
 		}
@@ -37,7 +43,7 @@ func ParseFuncParams(v *ast.FuncType, file *ast.File) []injection.Injectee {
 	return injectees
 }
 
-func findComment(groups []*ast.CommentGroup, start, end token.Pos) string {
+func (p *LexicalParser) findComment(groups []*ast.CommentGroup, start, end token.Pos) string {
 	for _, cg := range groups {
 		if cg.Pos() >= start && cg.Pos() < end {
 			return cg.Text()
