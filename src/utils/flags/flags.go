@@ -4,15 +4,15 @@ import "flag"
 
 type Flags struct {
 	Root       *string
-	AppCtxPath *string
+	Output     *string
 }
 
 func NewFlags() Flags {
 	root := flag.String("root", "", "root path")
-	appCtxPath := flag.String("ctxPath", "", "ctx path")
+	output := flag.String("ctxPath", "", "ctx path")
 	return Flags{
 		Root: root,
-		AppCtxPath: appCtxPath,
+		Output: output,
 	}
 }
 

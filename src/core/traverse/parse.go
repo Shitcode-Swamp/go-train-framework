@@ -1,4 +1,4 @@
-package files_traverse
+package traverse
 
 import (
 	"go/ast"

@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 
-	files_traverse "github.com/Shitcode-Swamp/go-train/src/core/files_traverse"
+	"github.com/Shitcode-Swamp/go-train/src/core/initialization"
 	"github.com/Shitcode-Swamp/go-train/src/core/injection"
 	"github.com/Shitcode-Swamp/go-train/src/core/parsers"
+	"github.com/Shitcode-Swamp/go-train/src/core/traverse"
 
-	// "github.com/Shitcode-Swamp/go-train/src/core/injection"
-	// "github.com/Shitcode-Swamp/go-train/src/core/someshi"
 	"github.com/Shitcode-Swamp/go-train/src/utils/flags"
 )
 
@@ -24,9 +23,9 @@ func main() {
 	flags := flags.NewFlags()
 	flags.Parse()
 	fmt.Println("root =", *flags.Root)
-	tree := files_traverse.NewInitializationTree()
-	traverse := files_traverse.NewFileTraverse(
-		tree, 
+	tree := initialization.NewInitializationTree()
+	traverse := traverse.NewFileTraverse(
+		tree,
 		parsers.NewLexicalParser(),
 	)
 	err := traverse.Parse(*flags.Root)
