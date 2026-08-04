@@ -3,47 +3,38 @@ package injection
 import "github.com/Shitcode-Swamp/go-train/src/utils/packages"
 
 type Injector struct {
-	name           *string
-	token          *string
+	name           string
+	token          string
 	pkg            packages.Package
-	typeName       *string
-	initFn         *string
+	typeName       string
+	initFn         string
 	injectedFields []Injectee
 }
 
-func NewInject(injectees []Injectee) *Injector {
+func NewInjector(
+	token string,
+	name string,
+	typeName string,
+	initFn string,
+	pkg packages.Package,
+	injectees []Injectee,
+) *Injector {
 	return &Injector{
+		token:          token,
+		name:           name,
+		typeName:       typeName,
+		initFn:         initFn,
+		pkg:            pkg,
 		injectedFields: injectees,
 	}
 }
 
-func (i *Injector) WithToken(token string) *Injector {
-	i.token = &token
-	return i
-}
-
-func (i *Injector) WithName(name string) *Injector {
-	i.name = &name
-	return i
-}
-
-func (i *Injector) WithTypeName(typeName string) *Injector {
-	i.typeName = &typeName
-	return i
-}
-
-func (i *Injector) WithInitFn(initFn string) *Injector {
-	i.initFn = &initFn
-	return i
-}
-
-func (i *Injector) WithPackage(name, path string) *Injector {
-	i.pkg = packages.Package{Name: name, Path: path}
-	return i
-}
-
-func (i *Injector) Token() *string {
+func (i *Injector) Token() string {
 	return i.token
+}
+
+func (i *Injector) Name() string {
+	return i.name
 }
 
 func (i *Injector) Injectees() []Injectee {
@@ -58,11 +49,11 @@ func (i *Injector) PackagePath() string {
 	return i.pkg.Path
 }
 
-func (i *Injector) TypeName() *string {
+func (i *Injector) TypeName() string {
 	return i.typeName
 }
 
-func (i *Injector) InitFn() *string {
+func (i *Injector) InitFn() string {
 	return i.initFn
 }
 

@@ -1,1 +1,1 @@
-go build -o ./build/go-train ./src/main.go && chmod +x ./build/go-train
+go build -o ./build/go-train ./cmd/go-train && chmod +x ./build/go-train

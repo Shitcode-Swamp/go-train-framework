@@ -46,7 +46,7 @@ func (it *InitializationTree) Traverse(visitor Visitor) error {
 func (it *InitializationTree) connectNodes() error {
 	tokenNodes := make(map[string]int)
 	for idx, node := range it.tree.Nodes() {
-		tokenNodes[*node.Token()] = idx
+		tokenNodes[node.Token()] = idx
 	}
 	for _, node := range it.tree.Nodes() {
 		if err := it.connectToChildren(node, tokenNodes); err != nil {
@@ -61,7 +61,7 @@ func (it *InitializationTree) connectToChildren(
 	tokenNodes map[string]int,
 ) error {
 	for _, injectee := range node.Injectees() {
-		it.tree.AddEdge(tokenNodes[*node.Token()], tokenNodes[injectee.Token()])
+		it.tree.AddEdge(tokenNodes[node.Token()], tokenNodes[injectee.Token()])
 	}
 	return nil
 }

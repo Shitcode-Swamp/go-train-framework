@@ -9,38 +9,28 @@ import (
 	"strings"
 
 	"github.com/Shitcode-Swamp/go-train/src/core/injection"
-	utils_strings "github.com/Shitcode-Swamp/go-train/src/utils/strings"
 )
-
-type Injections = map[string]*injection.Injector
 
 type Tree interface {
 	Insert(injector *injection.Injector)
 }
 
-type Parser interface {
-	ParseFuncParams(*ast.FuncType, *ast.File) []injection.Injectee
-}
-
-type Packages interface {
-	GetPackage(filePath string) (string, bool)
+type NodeFactory interface {
+	Create(n ast.Node, file *ast.File, path string) (*injection.Injector, bool)
 }
 
 type FileTraverse struct {
 	collector Tree
-	parser    Parser
-	packages  Packages
+	factory   NodeFactory
 }
 
 func NewFileTraverse(
 	collector Tree,
-	parser Parser,
-	packages Packages,
+	factory NodeFactory,
 ) *FileTraverse {
 	return &FileTraverse{
 		collector: collector,
-		parser:    parser,
-		packages:  packages,
+		factory:   factory,
 	}
 }
 
@@ -83,58 +73,10 @@ func (ft *FileTraverse) parseFile(path string) error {
 		return err
 	}
 	ast.Inspect(file, func(n ast.Node) bool {
-		injector := ft.inspectAstNode(n, file, path)
-		if injector != nil {
+		if injector, ok := ft.factory.Create(n, file, path); ok {
 			ft.collector.Insert(injector)
 		}
 		return true
 	})
 	return nil
-}
-
-func (ft *FileTraverse) inspectAstNode(n ast.Node, file *ast.File, path string) *injection.Injector {
-	fDecl, ok := n.(*ast.FuncDecl)
-	if !ok {
-		return nil
-	}
-	token := utils_strings.Extract(fDecl.Doc.Text(), `@Injection\(([^)]+)\)`)
-	if token == nil || fDecl.Type == nil {
-		return nil
-	}
-	injectees := ft.parser.ParseFuncParams(fDecl.Type, file)
-	pkg, ok := ft.packages.GetPackage(path)
-	if !ok {
-		return nil
-	}
-	return injection.NewInject(injectees).
-		WithToken(*token).
-		WithName(fDecl.Name.String()).
-		WithTypeName(getFunctionReturnType(fDecl)).
-		WithInitFn(fDecl.Name.String()).
-		WithPackage(file.Name.String(), pkg)
-}
-
-func getFunctionReturnType(fDecl *ast.FuncDecl) string {
-	if fDecl.Type.Results == nil || len(fDecl.Type.Results.List) == 0 {
-		return ""
-	}
-	result := fDecl.Type.Results.List[0]
-	if result.Type == nil {
-		return ""
-	}
-	return exprTypeName(result.Type)
-}
-
-func exprTypeName(expr ast.Expr) string {
-	switch t := expr.(type) {
-	case *ast.Ident:
-		return t.Name
-	case *ast.SelectorExpr:
-		if x, ok := t.X.(*ast.Ident); ok {
-			return x.Name + "." + t.Sel.Name
-		}
-	case *ast.StarExpr:
-		return "" + exprTypeName(t.X)
-	}
-	return ""
 }

@@ -27,10 +27,10 @@ func (icb *InjectionContextBuilder) Visit(injector *injection.Injector) {
 	if injector == nil {
 		panic(ErrMissingInjector)
 	}
-	if injector.Token() == nil {
+	if injector.Token() == "" {
 		panic(ErrMissingToken)
 	}
-	if injector.TypeName() == nil {
+	if injector.TypeName() == "" {
 		panic(ErrMissingTypeName)
 	}
 	icb.injectees = append(icb.injectees, injector)
@@ -72,10 +72,10 @@ func (icb *InjectionContextBuilder) buildFields() string {
 	fields := strings.Builder{}
 	for _, injectee := range icb.injectees {
 		fields.WriteString(
-			fmt.Sprintf("\t%s *%s.%s\n", 
-				*injectee.Token(), 
-				injectee.PackageName(), 
-				*injectee.TypeName(),
+			fmt.Sprintf("\t%s *%s.%s\n",
+				injectee.Token(),
+				injectee.PackageName(),
+				injectee.TypeName(),
 			),
 		)
 	}
@@ -89,15 +89,15 @@ func (icb *InjectionContextBuilder) buildCtxInit() string {
 		constructorParams := icb.injecteeContructorParams(injectee)
 		ctxInit.WriteString(fmt.Sprintf(
 			"\t%s := %s.%s(%s)\n",
-			*injectee.Token(),
+			injectee.Token(),
 			injectee.PackageName(),
-			*injectee.InitFn(),
+			injectee.InitFn(),
 			constructorParams,
 		))
 	}
 	ctxInit.WriteString("\treturn &AppContext{\n")
 	for _, injectee := range icb.injectees {
-		ctxInit.WriteString(fmt.Sprintf("\t\t%s: %s,\n", *injectee.Token(), *injectee.Token()))
+		ctxInit.WriteString(fmt.Sprintf("\t\t%s: %s,\n", injectee.Token(), injectee.Token()))
 	}
 	ctxInit.WriteString("\t}\n")
 	ctxInit.WriteString("}\n")
@@ -124,12 +124,12 @@ func (icb *InjectionContextBuilder) buildGetters() string {
 	for _, injectee := range icb.injectees {
 		getters.WriteString(
 			fmt.Sprintf("func (ctx *AppContext) %s() *%s.%s {\n",
-				cases.Title(language.English).String(*injectee.Token()),
+				cases.Title(language.English).String(injectee.Token()),
 				injectee.PackageName(),
-				*injectee.TypeName()),
+				injectee.TypeName()),
 		)
 		getters.WriteString(
-			fmt.Sprintf("\treturn ctx.%s\n", *injectee.Token()),
+			fmt.Sprintf("\treturn ctx.%s\n", injectee.Token()),
 		)
 		getters.WriteString("}\n")
 	}
