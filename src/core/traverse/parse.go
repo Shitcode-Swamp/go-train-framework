@@ -109,5 +109,32 @@ func (ft *FileTraverse) inspectAstNode(n ast.Node, file *ast.File, path string) 
 	return injection.NewInject(injectees).
 		WithToken(*token).
 		WithName(fDecl.Name.String()).
+		WithTypeName(getFunctionReturnType(fDecl)).
+		WithInitFn(fDecl.Name.String()).
 		WithPackage(file.Name.String(), pkg)
+}
+
+func getFunctionReturnType(fDecl *ast.FuncDecl) string {
+	if fDecl.Type.Results == nil || len(fDecl.Type.Results.List) == 0 {
+		return "1"
+	}
+	result := fDecl.Type.Results.List[0]
+	if result.Type == nil {
+		return "2"
+	}
+	return exprTypeName(result.Type)
+}
+
+func exprTypeName(expr ast.Expr) string {
+	switch t := expr.(type) {
+	case *ast.Ident:
+		return t.Name
+	case *ast.SelectorExpr:
+		if x, ok := t.X.(*ast.Ident); ok {
+			return x.Name + "." + t.Sel.Name
+		}
+	case *ast.StarExpr:
+		return "*" + exprTypeName(t.X)
+	}
+	return "3"
 }

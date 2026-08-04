@@ -9,7 +9,7 @@ type Flags struct {
 
 func NewFlags() Flags {
 	root := flag.String("root", "", "root path")
-	output := flag.String("ctxPath", "", "ctx path")
+	output := flag.String("ctxPath", "./", "ctx path")
 	return Flags{
 		Root: root,
 		Output: output,
