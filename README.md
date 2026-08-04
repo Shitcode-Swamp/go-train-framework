@@ -6,6 +6,14 @@
 
 Custom framework made in edutcational puposes.
 
+## Roadmap
+
+| Status     | Feature              | Description                                                                                |
+| ---------- | -------------------- | ------------------------------------------------------------------------------------------ |
+| ✅ Done    | Dependency Injection | Auto-wires `AppContext` fields, constructors, and getters from `@Injection`/`@Inject` tags |
+| 🔜 Planned | Controllers codegen  | Generate HTTP controllers from an API spec                                                 |
+| 🔜 Planned | gRPC codegen         | Generate gRPC service stubs from a shared spec repo                                        |
+
 ## Overall description
 
 Framework automaticaly builds AppCtx with needed dependencies
