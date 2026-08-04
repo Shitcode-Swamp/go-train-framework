@@ -1,4 +1,8 @@
+![gopher-train](./gopher-train.png)
+
 # go-train-framework
+
+[![Latest release](https://img.shields.io/github/v/release/Shitcode-Swamp/go-train)](https://github.com/Shitcode-Swamp/go-train/releases/latest)
 
 Custom framework made in edutcational puposes.
 
