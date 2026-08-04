@@ -5,8 +5,14 @@ import (
 	"github.com/Shitcode-Swamp/go-train/src/core/factory"
 	"github.com/Shitcode-Swamp/go-train/src/core/initialization"
 	"github.com/Shitcode-Swamp/go-train/src/core/parsers"
+	"github.com/Shitcode-Swamp/go-train/src/core/render"
 	"github.com/Shitcode-Swamp/go-train/src/core/traverse"
 	"github.com/Shitcode-Swamp/go-train/src/core/writer"
+)
+
+const (
+	contextType     = "AppContext"
+	contextReceiver = "ctx"
 )
 
 type AppCtxBuilder struct {
@@ -32,7 +38,8 @@ func (b *AppCtxBuilder) Build() error {
 	if err := tree.Initialize(); err != nil {
 		return err
 	}
-	visitor := injection_context.NewInjectionContextBuilder()
+	renderer := render.NewInjectorRenderer(contextType, contextReceiver)
+	visitor := injection_context.NewInjectionContextBuilder(renderer, contextType)
 	if err := tree.Traverse(visitor); err != nil {
 		return err
 	}

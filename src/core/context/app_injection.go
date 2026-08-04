@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"github.com/Shitcode-Swamp/go-train/src/core/injection"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 var (
@@ -15,12 +13,25 @@ var (
 	ErrMissingTypeName = fmt.Errorf("missing typeName for injector")
 )
 
-type InjectionContextBuilder struct {
-	injectees []*injection.Injector
+type Renderer interface {
+	Import(injector *injection.Injector) string
+	Field(injector *injection.Injector) string
+	Init(injector *injection.Injector) string
+	Assign(injector *injection.Injector) string
+	Getter(injector *injection.Injector) string
 }
 
-func NewInjectionContextBuilder() *InjectionContextBuilder {
-	return &InjectionContextBuilder{}
+type InjectionContextBuilder struct {
+	renderer    Renderer
+	contextType string
+	injectees   []*injection.Injector
+}
+
+func NewInjectionContextBuilder(renderer Renderer, contextType string) *InjectionContextBuilder {
+	return &InjectionContextBuilder{
+		renderer:    renderer,
+		contextType: contextType,
+	}
 }
 
 func (icb *InjectionContextBuilder) Visit(injector *injection.Injector) {
@@ -47,20 +58,22 @@ func (icb *InjectionContextBuilder) Build() string {
 }
 
 func (icb *InjectionContextBuilder) buildImports() string {
-	leanImports := make(map[string]struct{}, len(icb.injectees))
+	seen := make(map[string]struct{}, len(icb.injectees))
+	imports := make([]string, 0, len(icb.injectees))
 	for _, injectee := range icb.injectees {
-		leanImports[injectee.PackagePath()] = struct{}{}
-	}
-	imports := make([]string, 0, len(leanImports))
-	for imp := range leanImports {
-		imports = append(imports, fmt.Sprintf("\"%s\"", imp))
+		imp := icb.renderer.Import(injectee)
+		if _, ok := seen[imp]; ok {
+			continue
+		}
+		seen[imp] = struct{}{}
+		imports = append(imports, imp)
 	}
 	return strings.Join(imports, "\n\t")
 }
 
 func (icb *InjectionContextBuilder) buildAppCtx() string {
 	appCtx := strings.Builder{}
-	appCtx.WriteString("type AppContext struct {\n")
+	appCtx.WriteString(fmt.Sprintf("type %s struct {\n", icb.contextType))
 	appCtx.WriteString(icb.buildFields())
 	appCtx.WriteString("}\n\n")
 	appCtx.WriteString(icb.buildCtxInit())
@@ -71,67 +84,30 @@ func (icb *InjectionContextBuilder) buildAppCtx() string {
 func (icb *InjectionContextBuilder) buildFields() string {
 	fields := strings.Builder{}
 	for _, injectee := range icb.injectees {
-		fields.WriteString(
-			fmt.Sprintf("\t%s *%s.%s\n",
-				injectee.Token(),
-				injectee.PackageName(),
-				injectee.TypeName(),
-			),
-		)
+		fields.WriteString(icb.renderer.Field(injectee))
 	}
 	return fields.String()
 }
 
 func (icb *InjectionContextBuilder) buildCtxInit() string {
 	ctxInit := strings.Builder{}
-	ctxInit.WriteString("func NewAppContext() *AppContext {\n")
+	ctxInit.WriteString(fmt.Sprintf("func New%s() *%s {\n", icb.contextType, icb.contextType))
 	for _, injectee := range icb.injectees {
-		constructorParams := icb.injecteeContructorParams(injectee)
-		ctxInit.WriteString(fmt.Sprintf(
-			"\t%s := %s.%s(%s)\n",
-			injectee.Token(),
-			injectee.PackageName(),
-			injectee.InitFn(),
-			constructorParams,
-		))
+		ctxInit.WriteString(icb.renderer.Init(injectee))
 	}
-	ctxInit.WriteString("\treturn &AppContext{\n")
+	ctxInit.WriteString(fmt.Sprintf("\treturn &%s{\n", icb.contextType))
 	for _, injectee := range icb.injectees {
-		ctxInit.WriteString(fmt.Sprintf("\t\t%s: %s,\n", injectee.Token(), injectee.Token()))
+		ctxInit.WriteString(icb.renderer.Assign(injectee))
 	}
 	ctxInit.WriteString("\t}\n")
 	ctxInit.WriteString("}\n")
 	return ctxInit.String()
 }
 
-func (icb *InjectionContextBuilder) injecteeContructorParams(injectee *injection.Injector) string {
-	params := strings.Builder{}
-	if injectee.Injectees() == nil || len(injectee.Injectees()) == 0 {
-		return ""
-	}
-	for idx, param := range injectee.Injectees() {
-		if idx == len(injectee.Injectees())-1 {
-			params.WriteString(fmt.Sprintf("%s", param.Token()))
-		} else {
-			params.WriteString(fmt.Sprintf("%s, ", param.Token()))
-		}
-	}
-	return params.String()
-}
-
 func (icb *InjectionContextBuilder) buildGetters() string {
 	getters := strings.Builder{}
 	for _, injectee := range icb.injectees {
-		getters.WriteString(
-			fmt.Sprintf("func (ctx *AppContext) %s() *%s.%s {\n",
-				cases.Title(language.English).String(injectee.Token()),
-				injectee.PackageName(),
-				injectee.TypeName()),
-		)
-		getters.WriteString(
-			fmt.Sprintf("\treturn ctx.%s\n", injectee.Token()),
-		)
-		getters.WriteString("}\n")
+		getters.WriteString(icb.renderer.Getter(injectee))
 	}
 	return getters.String()
 }

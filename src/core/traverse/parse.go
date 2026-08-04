@@ -18,7 +18,7 @@ type Tree interface {
 type NodeFactory interface {
 	Create(n ast.Node, file *ast.File, path string) (*injection.Injector, bool)
 }
-
+ 
 type FileTraverse struct {
 	collector Tree
 	factory   NodeFactory

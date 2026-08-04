@@ -1,6 +1,6 @@
-![gopher-train](./gopher-train.png)
-
 # go-train-framework
+
+![gopher-train](./gopher-train.png)
 
 [![Latest release](https://img.shields.io/github/v/release/Shitcode-Swamp/go-train-framework)](https://github.com/Shitcode-Swamp/go-train-framework/releases/latest)
 
