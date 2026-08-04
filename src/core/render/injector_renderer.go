@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train/src/core/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/injection"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

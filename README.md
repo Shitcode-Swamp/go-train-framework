@@ -70,7 +70,7 @@ The command lives at `cmd/go-train` so it can be installed like any other Go too
 **Global install** (puts `go-train` on your `$GOBIN`/`$GOPATH/bin`):
 
 ```sh
-go install github.com/Shitcode-Swamp/go-train/cmd/go-train@latest
+go install github.com/Shitcode-Swamp/go-train-framework/cmd/go-train@latest
 go-train -root=./path/to/watch -ctxPath=./path/to/output
 ```
 
@@ -78,7 +78,7 @@ go-train -root=./path/to/watch -ctxPath=./path/to/output
 repo's `go.mod` via a `tool` directive):
 
 ```sh
-go get -tool github.com/Shitcode-Swamp/go-train/cmd/go-train@latest
+go get -tool github.com/Shitcode-Swamp/go-train-framework/cmd/go-train@latest
 go tool go-train -root=./path/to/watch -ctxPath=./path/to/output
 ```
 
@@ -86,5 +86,5 @@ While developing locally without a published module, point a consuming repo's
 `go.mod` at your local checkout instead:
 
 ```go
-replace github.com/Shitcode-Swamp/go-train => /path/to/go-train-framework
+replace github.com/Shitcode-Swamp/go-train-framework => /path/to/go-train-framework
 ```

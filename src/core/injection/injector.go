@@ -1,6 +1,6 @@
 package injection
 
-import "github.com/Shitcode-Swamp/go-train/src/utils/packages"
+import "github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
 
 type Injector struct {
 	name           string

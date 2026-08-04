@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/Shitcode-Swamp/go-train/src/core/appctx"
-	"github.com/Shitcode-Swamp/go-train/src/utils/flags"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/appctx"
+	"github.com/Shitcode-Swamp/go-train-framework/src/utils/flags"
 )
 
 func main() {

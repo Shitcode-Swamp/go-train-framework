@@ -4,8 +4,8 @@ import (
 	"go/ast"
 	"go/token"
 
-	"github.com/Shitcode-Swamp/go-train/src/core/injection"
-	utils_strings "github.com/Shitcode-Swamp/go-train/src/utils/strings"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/injection"
+	utils_strings "github.com/Shitcode-Swamp/go-train-framework/src/utils/strings"
 )
 
 type LexicalParser struct {}

@@ -1,13 +1,13 @@
 package appctx
 
 import (
-	injection_context "github.com/Shitcode-Swamp/go-train/src/core/context"
-	"github.com/Shitcode-Swamp/go-train/src/core/factory"
-	"github.com/Shitcode-Swamp/go-train/src/core/initialization"
-	"github.com/Shitcode-Swamp/go-train/src/core/parsers"
-	"github.com/Shitcode-Swamp/go-train/src/core/render"
-	"github.com/Shitcode-Swamp/go-train/src/core/traverse"
-	"github.com/Shitcode-Swamp/go-train/src/core/writer"
+	injection_context "github.com/Shitcode-Swamp/go-train-framework/src/core/context"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/factory"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/initialization"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/parsers"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/render"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/traverse"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/writer"
 )
 
 const (

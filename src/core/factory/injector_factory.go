@@ -3,9 +3,9 @@ package factory
 import (
 	"go/ast"
 
-	"github.com/Shitcode-Swamp/go-train/src/core/injection"
-	"github.com/Shitcode-Swamp/go-train/src/utils/packages"
-	utils_strings "github.com/Shitcode-Swamp/go-train/src/utils/strings"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
+	utils_strings "github.com/Shitcode-Swamp/go-train-framework/src/utils/strings"
 )
 
 type Parser interface {

@@ -1,4 +1,4 @@
-module github.com/Shitcode-Swamp/go-train
+module github.com/Shitcode-Swamp/go-train-framework
 
 go 1.25.5
 
