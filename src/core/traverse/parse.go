@@ -116,11 +116,11 @@ func (ft *FileTraverse) inspectAstNode(n ast.Node, file *ast.File, path string) 
 
 func getFunctionReturnType(fDecl *ast.FuncDecl) string {
 	if fDecl.Type.Results == nil || len(fDecl.Type.Results.List) == 0 {
-		return "1"
+		return ""
 	}
 	result := fDecl.Type.Results.List[0]
 	if result.Type == nil {
-		return "2"
+		return ""
 	}
 	return exprTypeName(result.Type)
 }
@@ -134,7 +134,7 @@ func exprTypeName(expr ast.Expr) string {
 			return x.Name + "." + t.Sel.Name
 		}
 	case *ast.StarExpr:
-		return "*" + exprTypeName(t.X)
+		return "" + exprTypeName(t.X)
 	}
-	return "3"
+	return ""
 }

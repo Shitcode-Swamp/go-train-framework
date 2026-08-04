@@ -7,6 +7,7 @@ import (
 	"github.com/Shitcode-Swamp/go-train/src/core/initialization"
 	"github.com/Shitcode-Swamp/go-train/src/core/parsers"
 	"github.com/Shitcode-Swamp/go-train/src/core/traverse"
+	"github.com/Shitcode-Swamp/go-train/src/core/writer"
 
 	"github.com/Shitcode-Swamp/go-train/src/utils/flags"
 )
@@ -30,5 +31,8 @@ func main() {
 		fmt.Println("error: ", err)
 	}
 	tree.Traverse(visitor)
-	fmt.Println(visitor.Build())
+	fileWriter := writer.NewFileWriter(*flags.Output)
+	if err := fileWriter.Write(visitor.Build()); err != nil {
+		fmt.Println("error: ", err)
+	}
 }

@@ -38,6 +38,8 @@ func (icb *InjectionContextBuilder) Visit(injector *injection.Injector) {
 
 func (icb *InjectionContextBuilder) Build() string {
 	sb := strings.Builder{}
+	sb.WriteString("// FILE IS AUTO GENERATED\n")
+	sb.WriteString("// DO NOT EDIT MANUALLY\n")
 	sb.WriteString("package app_context\n")
 	sb.WriteString(fmt.Sprintf("import (\n\t%s\n)\n", icb.buildImports()))
 	sb.WriteString(icb.buildAppCtx())
@@ -51,7 +53,7 @@ func (icb *InjectionContextBuilder) buildImports() string {
 	}
 	imports := make([]string, 0, len(leanImports))
 	for imp := range leanImports {
-		imports = append(imports, imp)
+		imports = append(imports, fmt.Sprintf("\"%s\"", imp))
 	}
 	return strings.Join(imports, "\n\t")
 }
@@ -69,7 +71,13 @@ func (icb *InjectionContextBuilder) buildAppCtx() string {
 func (icb *InjectionContextBuilder) buildFields() string {
 	fields := strings.Builder{}
 	for _, injectee := range icb.injectees {
-		fields.WriteString(fmt.Sprintf("\t%s %s\n", *injectee.Token(), *injectee.TypeName()))
+		fields.WriteString(
+			fmt.Sprintf("\t%s *%s.%s\n", 
+				*injectee.Token(), 
+				injectee.PackageName(), 
+				*injectee.TypeName(),
+			),
+		)
 	}
 	return fields.String()
 }
@@ -103,9 +111,9 @@ func (icb *InjectionContextBuilder) injecteeContructorParams(injectee *injection
 	}
 	for idx, param := range injectee.Injectees() {
 		if idx == len(injectee.Injectees())-1 {
-			params.WriteString(fmt.Sprintf("%s", cases.Lower(language.English).String(param.Token())))
+			params.WriteString(fmt.Sprintf("%s", param.Token()))
 		} else {
-			params.WriteString(fmt.Sprintf("%s, ", cases.Lower(language.English).String(param.Token())))
+			params.WriteString(fmt.Sprintf("%s, ", param.Token()))
 		}
 	}
 	return params.String()
@@ -115,8 +123,9 @@ func (icb *InjectionContextBuilder) buildGetters() string {
 	getters := strings.Builder{}
 	for _, injectee := range icb.injectees {
 		getters.WriteString(
-			fmt.Sprintf("func (ctx *AppContext) %s() %s {\n",
+			fmt.Sprintf("func (ctx *AppContext) %s() *%s.%s {\n",
 				cases.Title(language.English).String(*injectee.Token()),
+				injectee.PackageName(),
 				*injectee.TypeName()),
 		)
 		getters.WriteString(
