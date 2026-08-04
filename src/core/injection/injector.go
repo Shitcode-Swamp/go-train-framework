@@ -41,12 +41,8 @@ func (i *Injector) Injectees() []Injectee {
 	return i.injectedFields
 }
 
-func (i *Injector) PackageName() string {
-	return i.pkg.Name
-}
-
-func (i *Injector) PackagePath() string {
-	return i.pkg.Path
+func (i *Injector) Package() packages.Package {
+	return i.pkg
 }
 
 func (i *Injector) TypeName() string {

@@ -22,18 +22,18 @@ func NewInjectorRenderer(receiverType, receiverVar string) *InjectorRenderer {
 }
 
 func (r *InjectorRenderer) Import(injector *injection.Injector) string {
-	return fmt.Sprintf("\"%s\"", injector.PackagePath())
+	return fmt.Sprintf("%s \"%s\"", injector.Package().Alias(), injector.Package().Path)
 }
 
 func (r *InjectorRenderer) Field(injector *injection.Injector) string {
-	return fmt.Sprintf("\t%s *%s.%s\n", injector.Token(), injector.PackageName(), injector.TypeName())
+	return fmt.Sprintf("\t%s *%s.%s\n", injector.Token(), injector.Package().Alias(), injector.TypeName())
 }
 
 func (r *InjectorRenderer) Init(injector *injection.Injector) string {
 	return fmt.Sprintf(
 		"\t%s := %s.%s(%s)\n",
 		injector.Token(),
-		injector.PackageName(),
+		injector.Package().Alias(),
 		injector.InitFn(),
 		r.constructorParams(injector),
 	)
@@ -50,7 +50,7 @@ func (r *InjectorRenderer) Getter(injector *injection.Injector) string {
 		r.receiverVar,
 		r.receiverType,
 		cases.Title(language.English).String(injector.Token()),
-		injector.PackageName(),
+		injector.Package().Alias(),
 		injector.TypeName(),
 	))
 	getter.WriteString(fmt.Sprintf("\treturn %s.%s\n", r.receiverVar, injector.Token()))
