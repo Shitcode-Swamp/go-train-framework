@@ -16,6 +16,53 @@ You must describe what directory to watch via flag `--root=path`
 
 How the framework is built is descrived in the `structure.excalidraw`
 
+## DI tags
+
+Two comment annotations drive the generator:
+
+- `@Injection(token)` — goes on a constructor function's doc comment. Marks it
+  as a dependency to include in `AppContext`, keyed by `token`.
+- `@Inject(token)` — goes on a constructor parameter (as an inline `/* ... */`
+  comment). Marks that parameter as needing another `@Injection`-tagged
+  dependency, resolved by its `token`.
+
+```go
+// @Injection(testInjectee)
+func InitInjectee() *TestStruct {
+	return &TestStruct{}
+}
+
+// @Injection(test)
+func Init(
+	testField interface{} /* @Inject(testInjectee) */,
+) *TestStruct {
+	return &TestStruct{
+		TestField: testField,
+	}
+}
+```
+
+Running the tool over a directory containing both produces something like:
+
+```go
+type AppContext struct {
+	testInjectee *pkg.TestStruct
+	test         *pkg.TestStruct
+}
+
+func NewAppContext() *AppContext {
+	testInjectee := pkg.InitInjectee()
+	test := pkg.Init(testInjectee)
+	return &AppContext{
+		testInjectee: testInjectee,
+		test:         test,
+	}
+}
+```
+
+Dependency order is resolved automatically — you don't need to declare `Init`
+before `InitInjectee`, or worry about wiring them together by hand.
+
 ## Using it as a Go tool in other repos
 
 The command lives at `cmd/go-train` so it can be installed like any other Go tool.
