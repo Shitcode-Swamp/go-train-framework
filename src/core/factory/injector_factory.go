@@ -2,6 +2,7 @@ package factory
 
 import (
 	"go/ast"
+	"strings"
 
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/injection"
 	"github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
@@ -33,23 +34,40 @@ func (f *InjectorFactory) Create(n ast.Node, file *ast.File, path string) (*inje
 	if !ok {
 		return nil, false
 	}
-	token := utils_strings.Extract(fDecl.Doc.Text(), `@Injection\(([^)]+)\)`)
-	if token == nil {
+	tag := utils_strings.Extract(fDecl.Doc.Text(), `@Injection\(([^)]+)\)`)
+	if tag == nil {
 		return nil, false
 	}
+	token, flags := parseTag(*tag)
 	pkg, ok := f.packages.GetPackage(path)
 	if !ok {
 		return nil, false
 	}
 	injectees := f.parser.ParseFuncParams(fDecl.Type, file)
 	return injection.NewInjector(
-		*token,
+		token,
 		fDecl.Name.String(),
 		functionReturnType(fDecl),
 		fDecl.Name.String(),
 		packages.Package{Name: file.Name.String(), Path: pkg},
 		injectees,
+		flags,
 	), true
+}
+
+func parseTag(tag string) (string, []string) {
+	parts := strings.Split(tag, ",")
+	token := strings.TrimSpace(parts[0])
+	if len(parts) == 1 {
+		return token, nil
+	}
+	flags := make([]string, 0, len(parts)-1)
+	for _, part := range parts[1:] {
+		if flag := strings.TrimSpace(part); flag != "" {
+			flags = append(flags, flag)
+		}
+	}
+	return token, flags
 }
 
 func functionReturnType(fDecl *ast.FuncDecl) string {

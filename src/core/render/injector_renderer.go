@@ -44,6 +44,9 @@ func (r *InjectorRenderer) Assign(injector *injection.Injector) string {
 }
 
 func (r *InjectorRenderer) Getter(injector *injection.Injector) string {
+	if injector.HasFlag(injection.NoGetterFlag) {
+		return ""
+	}
 	getter := strings.Builder{}
 	getter.WriteString(fmt.Sprintf(
 		"func (%s *%s) %s() *%s.%s {\n",

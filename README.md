@@ -63,6 +63,23 @@ func NewAppContext() *AppContext {
 Dependency order is resolved automatically — you don't need to declare `Init`
 before `InitInjectee`, or worry about wiring them together by hand.
 
+### Flags
+
+`@Injection(token, flag-one, flag-two)` accepts optional comma-separated
+flags after the token to opt out of parts of the generated code for that
+dependency:
+
+- `no-getter` — don't generate an `AppContext` getter method for it. The
+  field is still populated and wired into the constructor, it's just not
+  exposed via a getter.
+
+```go
+// @Injection(internalCache, no-getter)
+func NewCache() *Cache {
+	return &Cache{}
+}
+```
+
 ## Using it as a Go tool in other repos
 
 The command lives at `cmd/go-train` so it can be installed like any other Go tool.

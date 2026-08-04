@@ -1,6 +1,11 @@
 package injection
 
-import "github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
+import (
+	"github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
+	"github.com/Shitcode-Swamp/go-train-framework/src/utils/sets"
+)
+
+const NoGetterFlag = "no-getter"
 
 type Injector struct {
 	name           string
@@ -9,6 +14,7 @@ type Injector struct {
 	typeName       string
 	initFn         string
 	injectedFields []Injectee
+	flags          sets.Set[string]
 }
 
 func NewInjector(
@@ -18,6 +24,7 @@ func NewInjector(
 	initFn string,
 	pkg packages.Package,
 	injectees []Injectee,
+	flags []string,
 ) *Injector {
 	return &Injector{
 		token:          token,
@@ -26,6 +33,7 @@ func NewInjector(
 		initFn:         initFn,
 		pkg:            pkg,
 		injectedFields: injectees,
+		flags:          sets.NewSet(flags...),
 	}
 }
 
@@ -51,6 +59,11 @@ func (i *Injector) TypeName() string {
 
 func (i *Injector) InitFn() string {
 	return i.initFn
+}
+
+func (i *Injector) HasFlag(flag string) bool {
+	_, ok := i.flags[flag]
+	return ok
 }
 
 type Injectee struct {
