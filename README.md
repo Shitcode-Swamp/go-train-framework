@@ -11,7 +11,7 @@ Custom framework made in edutcational puposes.
 | Status     | Feature              | Description                                                                                |
 | ---------- | -------------------- | ------------------------------------------------------------------------------------------ |
 | ✅ Done    | Dependency Injection | Auto-wires `AppContext` fields, constructors, and getters from `@Injection`/`@Inject` tags |
-| 🔜 Planned | Controllers codegen  | Controller  codegen by folders paths (spec idea turned out non-convenient)                                            |
+| 🔜 Planned | Controllers codegen  | Controller abstraction + docs                                            |
 | 🔜 Planned | gRPC codegen         | Generate gRPC service stubs from a shared spec repo                                        |
 
 ## Overall description
