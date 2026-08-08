@@ -1,6 +1,7 @@
 package writer
 
 import (
+	"go/format"
 	"os"
 	"path/filepath"
 )
@@ -19,5 +20,9 @@ func (fw *FileWriter) Write(content string) error {
 	if err := os.MkdirAll(fw.outputDir, 0o755); err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(fw.outputDir, outputFileName), []byte(content), 0o644)
+	formatted, err := format.Source([]byte(content))
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filepath.Join(fw.outputDir, outputFileName), formatted, 0o644)
 }

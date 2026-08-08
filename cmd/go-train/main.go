@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/appctx"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/appctx"
 	"github.com/Shitcode-Swamp/go-train-framework/src/utils/flags"
 )
 

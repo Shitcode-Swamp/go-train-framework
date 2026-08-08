@@ -3,7 +3,7 @@ package initialization
 import (
 	"errors"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/injection"
 	"github.com/Shitcode-Swamp/go-train-framework/src/utils/graph"
 )
 
