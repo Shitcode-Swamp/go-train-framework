@@ -41,8 +41,8 @@ func (f Func) String() string {
 	if f.Receiver != nil {
 		fmt.Fprintf(&b, "%s ", f.Receiver)
 	}
-	fmt.Fprintf(&b, "%s(%s)", f.Name, f.paramsString())
-	if results := f.resultsString(); results != "" {
+	fmt.Fprintf(&b, "%s(%s)", f.Name, fieldsString(f.Params))
+	if results := resultsString(f.Results); results != "" {
 		fmt.Fprintf(&b, " %s", results)
 	}
 	b.WriteString(" {\n")
@@ -57,21 +57,21 @@ func (f Func) StringCall(args ...string) string {
 	return fmt.Sprintf("%s(%s)", f.Name, strings.Join(args, ", "))
 }
 
-func (f Func) paramsString() string {
-	params := make([]string, 0, len(f.Params))
-	for _, param := range f.Params {
-		params = append(params, param.String())
+func fieldsString(fields []Field) string {
+	parts := make([]string, 0, len(fields))
+	for _, field := range fields {
+		parts = append(parts, field.String())
 	}
-	return strings.Join(params, ", ")
+	return strings.Join(parts, ", ")
 }
 
-func (f Func) resultsString() string {
-	switch len(f.Results) {
+func resultsString(results []string) string {
+	switch len(results) {
 	case 0:
 		return ""
 	case 1:
-		return f.Results[0]
+		return results[0]
 	default:
-		return fmt.Sprintf("(%s)", strings.Join(f.Results, ", "))
+		return fmt.Sprintf("(%s)", strings.Join(results, ", "))
 	}
 }

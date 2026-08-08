@@ -8,6 +8,11 @@ import (
 	"github.com/Shitcode-Swamp/go-train-framework/src/lexical"
 )
 
+const (
+	FileGenerated = "FILE IS AUTO GENERATED"
+	DoNotEdit     = "DO NOT EDIT MANUALLY"
+)
+
 var (
 	ErrMissingInjector = fmt.Errorf("missing injector")
 	ErrMissingToken    = fmt.Errorf("missing token for injector")
@@ -50,9 +55,8 @@ func (icb *InjectionContextBuilder) Visit(injector *injection.Injector) {
 
 func (icb *InjectionContextBuilder) Build() string {
 	sb := strings.Builder{}
-	sb.WriteString("// FILE IS AUTO GENERATED\n")
-	sb.WriteString("// DO NOT EDIT MANUALLY\n")
-	sb.WriteString("package app_context\n")
+	sb.WriteString(lexical.NewComment(FileGenerated, DoNotEdit).String())
+	sb.WriteString(lexical.NewPackage("app_context").String())
 	sb.WriteString(fmt.Sprintf("import (\n%s\n)\n", icb.buildImports()))
 	sb.WriteString(icb.buildAppCtx())
 	return sb.String()

@@ -8,14 +8,23 @@ import (
 type Field struct {
 	Name string
 	Type string
+	Tag  string
 }
 
 func NewField(name, typ string) Field {
 	return Field{Name: name, Type: typ}
 }
 
+func (f Field) WithTag(tag string) Field {
+	f.Tag = tag
+	return f
+}
+
 func (f Field) String() string {
-	return fmt.Sprintf("%s %s", f.Name, f.Type)
+	if f.Tag == "" {
+		return fmt.Sprintf("%s %s", f.Name, f.Type)
+	}
+	return fmt.Sprintf("%s %s `%s`", f.Name, f.Type, f.Tag)
 }
 
 type Struct struct {
