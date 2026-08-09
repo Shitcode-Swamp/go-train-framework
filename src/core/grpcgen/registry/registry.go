@@ -7,9 +7,13 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/transport"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 
 	"github.com/Shitcode-Swamp/go-train-framework/src/utils/config"
 )
+
+const tokenEnvVar = "GO_TRAIN_GRPC_TOKEN"
 
 var ErrMissingSourceRegistry = errors.New("grpcConfig.sourceRegistry.sourceRegistry must be set")
 
@@ -40,10 +44,22 @@ func newTempCloneDir() (string, error) {
 }
 
 func cloneInto(dir, url string) error {
-	if _, err := git.PlainClone(dir, false, &git.CloneOptions{URL: url, Depth: 1}); err != nil {
+	opts := &git.CloneOptions{URL: url, Depth: 1, Auth: httpTokenAuth(url)}
+	if _, err := git.PlainClone(dir, false, opts); err != nil {
 		return fmt.Errorf("failed to clone %s: %w", url, err)
 	}
 	return nil
+}
+
+func httpTokenAuth(url string) transport.AuthMethod {
+	if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
+		return nil
+	}
+	token := os.Getenv(tokenEnvVar)
+	if token == "" {
+		return nil
+	}
+	return &githttp.BasicAuth{Username: "go-train-grpc", Password: token}
 }
 
 func cloneURL(cfg config.GrpcRegistry) string {

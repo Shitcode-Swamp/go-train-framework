@@ -119,6 +119,13 @@ go install github.com/Shitcode-Swamp/go-train-framework/cmd/go-train-grpc@latest
 go-train-grpc -config=./go-train.yaml
 ```
 
+For a private registry over `https://`, set `GO_TRAIN_GRPC_TOKEN` to a
+personal access token:
+
+```sh
+GO_TRAIN_GRPC_TOKEN=<token> go-train-grpc -config=./go-train.yaml
+```
+
 ## Using it as a Go tool in other repos
 
 The command lives at `cmd/go-train` so it can be installed like any other Go tool.
