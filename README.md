@@ -14,7 +14,7 @@ Custom framework made in edutcational puposes.
 |  ✅ Done | Controllers codegen  | Controller abstraction + docs                                            |
 | 🔜 Planned | gRPC codegen         | Generate gRPC service stubs from a shared spec repo                                        |
 | 🔜 Planned | DB abstraction      | DB abstraction |
-| 🔜 Planned | MQ abstraction      | MQ abstraction (Kafka and RabitMQ) |
+| 🔜 Planned | Message broker and MQ abstractions      |  Kafka and RabitMQ |
 
 ## Overall description
 
