@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/core"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/contract"
 )
 
 type routeRegistry struct {
@@ -39,23 +39,23 @@ type routeDoc struct {
 	path_ any
 }
 
-func (r *routeDoc) RouteDocs() core.RouteDocs {
+func (r *routeDoc) RouteDocs() contract.RouteDocs {
 	return r
 }
 
-func (r *routeDoc) Query(query any) core.RouteDocs {
+func (r *routeDoc) Query(query any) contract.RouteDocs {
 	r.query = query
 
 	return r
 }
 
-func (r *routeDoc) Body(body any) core.RouteDocs {
+func (r *routeDoc) Body(body any) contract.RouteDocs {
 	r.body = body
 
 	return r
 }
 
-func (r *routeDoc) Path(path any) core.RouteDocs {
+func (r *routeDoc) Path(path any) contract.RouteDocs {
 	r.path_ = path
 
 	return r

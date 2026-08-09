@@ -11,7 +11,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/swag"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/core"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/contract"
 )
 
 const swaggerRoute = "/docs/*any"
@@ -19,12 +19,12 @@ const swaggerRoute = "/docs/*any"
 var docsInstanceSeq atomic.Uint64
 
 type Docs struct {
-	options      core.DocsOptions
+	options      contract.DocsOptions
 	instanceName string
 	registry     *routeRegistry
 }
 
-func NewDocs(opt core.DocsOptions, registry *routeRegistry) *Docs {
+func NewDocs(opt contract.DocsOptions, registry *routeRegistry) *Docs {
 	d := &Docs{
 		options:      opt,
 		instanceName: fmt.Sprintf("%s-%d", swag.Name, docsInstanceSeq.Add(1)),
