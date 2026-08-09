@@ -59,6 +59,12 @@ func (r *RouterGroup) DELETE(path string, handlers ...contract.HandlerFunc) cont
 	return r.registry.add(http.MethodDelete, r.fullPath(path))
 }
 
+func (r *RouterGroup) PATCH(path string, handlers ...contract.HandlerFunc) contract.Docs {
+	r.group.PATCH(path, toGinHandlers(handlers)...)
+
+	return r.registry.add(http.MethodPatch, r.fullPath(path))
+}
+
 func (r *RouterGroup) Group(relativePath string) contract.RouterGroup {
 	return newRouterGroup(r.group.Group(relativePath), r.registry)
 }

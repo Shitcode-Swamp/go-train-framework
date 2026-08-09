@@ -11,6 +11,7 @@ type RouterGroup interface {
 	POST(path string, handlers ...HandlerFunc) Docs
 	PUT(path string, handlers ...HandlerFunc) Docs
 	DELETE(path string, handlers ...HandlerFunc) Docs
+	PATCH(path string, handlers ...HandlerFunc) Docs
 
 	Group(relativePath string) RouterGroup
 	Use(middleware ...HandlerFunc) RouterGroup
