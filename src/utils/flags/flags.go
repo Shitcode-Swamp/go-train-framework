@@ -27,3 +27,17 @@ func (f *Flags) Parse() *Flags {
 	flag.Parse()
 	return f
 }
+
+type GrpcFlags struct {
+	Config *string
+}
+
+func NewGrpcFlags() *GrpcFlags {
+	cfg := flag.String("config", "./go-train.yaml", "Path to the go-train config file")
+	return (&GrpcFlags{Config: cfg}).Parse()
+}
+
+func (f *GrpcFlags) Parse() *GrpcFlags {
+	flag.Parse()
+	return f
+}

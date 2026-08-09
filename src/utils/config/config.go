@@ -7,13 +7,13 @@ import (
 	"fmt"
 )
 
-type grpcRegistry struct {
+type GrpcRegistry struct {
 	SourceRegistry string `yaml:"sourceRegistry" mapstructure:"sourceRegistry"`
 	IsGitHub       bool   `yaml:"isGithub" mapstructure:"isGithub"`
 }
 
-type grpcConfig struct {
-	SourceRegistry grpcRegistry `yaml:"sourceRegistry" mapstructure:"sourceRegistry"`
+type GrpcConfig struct {
+	SourceRegistry GrpcRegistry `yaml:"sourceRegistry" mapstructure:"sourceRegistry"`
 	Output         string       `yaml:"output" mapstructure:"output"`
 }
 
@@ -21,7 +21,7 @@ type Config struct {
 	Root   string `yaml:"root" mapstructure:"root"`
 	Output string `yaml:"output" mapstructure:"output"`
 
-	GrpcConfig grpcConfig `yaml:"grpcConfig" mapstructure:"grpcConfig"`
+	GrpcConfig GrpcConfig `yaml:"grpcConfig" mapstructure:"grpcConfig"`
 }
 
 const (

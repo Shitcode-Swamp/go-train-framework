@@ -12,7 +12,7 @@ Custom framework made in educational puposes.
 | ---------- | -------------------- | ------------------------------------------------------------------------------------------ |
 | ✅ Done    | Dependency Injection | Auto-wires `AppContext` fields, constructors, and getters from `@Injection`/`@Inject` tags |
 |  ✅ Done | Controllers codegen  | Controller abstraction + docs                                            |
-| 🔜 Planned | gRPC codegen         | Generate gRPC service stubs from a shared spec repo                                        |
+| ✅ Done    | gRPC codegen         | Generate gRPC service stubs from a shared spec repo                                        |
 | 🔜 Planned | DB abstraction      | DB abstraction |
 | 🔜 Planned | Message broker and MQ abstractions      |  Kafka and RabitMQ |
 
@@ -88,6 +88,35 @@ dependency:
 func NewCache() *Cache {
 	return &Cache{}
 }
+```
+
+## gRPC codegen
+
+`go-train-grpc` reads the `grpcConfig` section of your config file and turns
+a shared repo of `.proto` files into generated Go/gRPC code:
+
+```yaml
+grpcConfig:
+  output: ./out/grpc
+  sourceRegistry:
+    sourceRegistry: your-org/proto-specs
+    isGithub: true
+```
+
+- `sourceRegistry.sourceRegistry` — where the `.proto` files live. With
+  `isGithub: true` this is an `owner/repo` shorthand resolved against
+  `github.com`; otherwise it's used as-is, so it can be any git remote
+  (`https://`, `ssh://`) or a local path.
+- `sourceRegistry.isGithub` — toggles the `owner/repo` shorthand above.
+- `output` — where the generated `.go` files are written.
+
+It clones the registry, then shells out to `protoc` with the `go` and
+`go-grpc` plugins, so `protoc`, `protoc-gen-go`, and `protoc-gen-go-grpc`
+must be on your `PATH`.
+
+```sh
+go install github.com/Shitcode-Swamp/go-train-framework/cmd/go-train-grpc@latest
+go-train-grpc -config=./go-train.yaml
 ```
 
 ## Using it as a Go tool in other repos
