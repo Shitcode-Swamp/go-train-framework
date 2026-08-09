@@ -1,10 +1,9 @@
 package flags
 
-import "flag"
+import (
+	"flag"
 
-const (
-	DefaultRootPath   = ""
-	DefaultOutputPath = "./"
+	"github.com/Shitcode-Swamp/go-train-framework/src/utils/config"
 )
 
 type Flags struct {
@@ -14,16 +13,17 @@ type Flags struct {
 }
 
 func NewFlags() *Flags {
-	root := flag.String("root", DefaultRootPath, "Root path")
-	output := flag.String("output", DefaultOutputPath, "Output path")
-	config := flag.String("config", "", "Optional config path")
-	return &Flags{
+	root := flag.String("root", config.DefaultRootPath, "Root path")
+	output := flag.String("ctxPath", config.DefaultOutputPath, "Context output path")
+	cfg := flag.String("config", "", "Optional config path")
+	return (&Flags{
 		Root:   root,
 		Output: output,
-		Config: config,
-	}
+		Config: cfg,
+	}).Parse()
 }
 
-func (f *Flags) Parse() {
+func (f *Flags) Parse() *Flags {
 	flag.Parse()
+	return f
 }

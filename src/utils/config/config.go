@@ -24,12 +24,29 @@ type Config struct {
 	GrpcConfig grpcConfig `yaml:"grpcConfig" mapstructure:"grpcConfig"`
 }
 
-func NewConfig(root, output string) *Config {
-	return &Config{
-		Root:   root,
-		Output: output,
-		GrpcConfig: grpcConfig{},
+const (
+	DefaultRootPath   = ""
+	DefaultOutputPath = "./"
+)
+
+func NewConfig(root, output, configPath string) (*Config, error) {
+	if configPath == "" {
+		return &Config{
+			Root:   root,
+			Output: output,
+		}, nil
 	}
+	cfg, err := ConfigFromFile(configPath)
+	if err != nil {
+		return nil, err
+	}
+	if root != DefaultRootPath {
+		cfg.OverrideRoot(root)
+	}
+	if output != DefaultOutputPath {
+		cfg.OverrideOutput(output)
+	}
+	return cfg, nil
 }
 
 func ConfigFromFile(path string) (*Config, error) {

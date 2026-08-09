@@ -9,9 +9,8 @@ import (
 )
 
 func main() {
-	flags := flags.NewFlags()
-	flags.Parse()
-	cfg, err := getConfig(flags)
+	f := flags.NewFlags()
+	cfg, err := config.NewConfig(*f.Root, *f.Output, *f.Config)
 	if err != nil {
 		fmt.Println("error: ", err)
 		return
@@ -21,22 +20,4 @@ func main() {
 	if err := appBuilder.Build(); err != nil {
 		fmt.Println("error: ", err)
 	}
-}
-
-func getConfig(f *flags.Flags) (*config.Config, error) {
-	if *f.Config == "" {
-		return config.NewConfig(*f.Root, *f.Output), nil
-	}
-	cfg, err := config.ConfigFromFile(*f.Config)
-	if err != nil {
-		fmt.Println("error: ", err)
-		return nil, err
-	}
-	if *f.Root != flags.DefaultRootPath {
-		cfg.OverrideRoot(*f.Root)
-	}
-	if *f.Output != flags.DefaultOutputPath {
-		cfg.OverrideOutput(*f.Output)
-	}
-	return cfg, nil
 }
