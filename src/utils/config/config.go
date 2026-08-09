@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/viper"
+	"fmt"
 )
 
 type grpcRegistry struct {
@@ -71,4 +72,15 @@ func fileExtFromPath(path string) string {
 
 func filePathWithoutName(path string) string {
 	return filepath.Dir(path)
+}
+
+func LogConfig(c *Config) {
+	fmt.Printf("Config:\n")
+	fmt.Printf("  Root: %s\n", c.Root)
+	fmt.Printf("  Output: %s\n", c.Output)
+	fmt.Printf("  GrpcConfig:\n")
+	fmt.Printf("    SourceRegistry:\n")
+	fmt.Printf("      SourceRegistry: %s\n", c.GrpcConfig.SourceRegistry.SourceRegistry)
+	fmt.Printf("      IsGitHub: %t\n", c.GrpcConfig.SourceRegistry.IsGitHub)
+	fmt.Printf("    Output: %s\n", c.GrpcConfig.Output)
 }

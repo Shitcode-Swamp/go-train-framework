@@ -1,0 +1,7 @@
+root: ./src
+output: ./out2
+grpcConfig:
+  output: ./out/grpc
+  sourceRegistry:
+    sourceRegistry: https://github.com/example/protos
+    isGithub: true

@@ -16,22 +16,27 @@ func main() {
 		fmt.Println("error: ", err)
 		return
 	}
+	config.LogConfig(cfg)
 	appBuilder := appctx.NewAppCtxBuilder(cfg.Root, cfg.Output)
 	if err := appBuilder.Build(); err != nil {
 		fmt.Println("error: ", err)
 	}
 }
 
-func getConfig(flags *flags.Flags) (*config.Config, error) {
-	if *flags.Config == "" {
-		return config.NewConfig(*flags.Root, *flags.Output), nil
+func getConfig(f *flags.Flags) (*config.Config, error) {
+	if *f.Config == "" {
+		return config.NewConfig(*f.Root, *f.Output), nil
 	}
-	cfg, err := config.ConfigFromFile(*flags.Config)
+	cfg, err := config.ConfigFromFile(*f.Config)
 	if err != nil {
 		fmt.Println("error: ", err)
 		return nil, err
 	}
-	return cfg.
-		OverrideRoot(*flags.Root).
-		OverrideOutput(*flags.Output), nil
+	if *f.Root != flags.DefaultRootPath {
+		cfg.OverrideRoot(*f.Root)
+	}
+	if *f.Output != flags.DefaultOutputPath {
+		cfg.OverrideOutput(*f.Output)
+	}
+	return cfg, nil
 }
