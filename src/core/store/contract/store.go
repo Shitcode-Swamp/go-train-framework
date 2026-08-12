@@ -15,17 +15,17 @@ type Store[T any] interface {
 	Insert(ctx context.Context, doc T, options ...InsertOptions) (id any, err error)
 	BulkInsert(ctx context.Context, docs []T, options ...InsertOptions) (ids []any, err error)
 
-	Update(ctx context.Context, filter filters.Filter[T], update T, options ...UpdateOptions) error
+	Update(ctx context.Context, filter filters.Filtered[T], update T, options ...UpdateOptions) error
 	BulkUpdate(ctx context.Context, ops []BulkUpdateOp[T]) error
 
-	One(ctx context.Context, filter filters.Filter[T]) (T, error)
-	Many(ctx context.Context, filter filters.Filter[T]) ([]T, error)
+	One(ctx context.Context, filter filters.Filtered[T]) (T, error)
+	Many(ctx context.Context, filter filters.Filtered[T]) ([]T, error)
 
-	Delete(ctx context.Context, filter filters.Filter[T]) error
+	Delete(ctx context.Context, filter filters.Filtered[T]) error
 }
 
 type BulkUpdateOp[T any] struct {
-	Filter filters.Filter[T]
+	Filter filters.Filtered[T]
 	Update T
 	Upsert bool
 }
