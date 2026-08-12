@@ -7,9 +7,7 @@ import (
 )
 
 type InsertOptions struct{}
-type UpdateOptions struct {
-	Upsert *bool
-}
+type UpdateOptions struct{ Upsert *bool }
 
 type Store[T any] interface {
 	Insert(ctx context.Context, doc T, options ...InsertOptions) (id any, err error)
