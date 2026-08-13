@@ -91,9 +91,12 @@ func TestUpdate(t *testing.T) {
 		t.Fatalf("seed Insert: %v", err)
 	}
 
-	err := tbl.Update(ctx, productID.Is(filters.Eq("p2")), product{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 3, Active: true})
+	id, err := tbl.Update(ctx, productID.Is(filters.Eq("p2")), product{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 3, Active: true})
 	if err != nil {
 		t.Fatalf("Update: %v", err)
+	}
+	if id != "p2" {
+		t.Fatalf("expected returned id p2, got %v", id)
 	}
 	got, err := tbl.One(ctx, productID.Is(filters.Eq("p2")))
 	if err != nil {
@@ -111,12 +114,15 @@ func TestUpdateWithUpsertFallback(t *testing.T) {
 	tbl := postgre.New[product](pool, productsTable)
 
 	upsert := true
-	err := tbl.Update(ctx, productID.Is(filters.Eq("p4")),
+	id, err := tbl.Update(ctx, productID.Is(filters.Eq("p4")),
 		product{ID: "p4", Name: "Doohickey", Price: 4.99, Stock: 7, Active: true},
 		store.UpdateOptions{Upsert: &upsert},
 	)
 	if err != nil {
 		t.Fatalf("Update with upsert: %v", err)
+	}
+	if id != "p4" {
+		t.Fatalf("expected returned id p4, got %v", id)
 	}
 	got, err := tbl.One(ctx, productID.Is(filters.Eq("p4")))
 	if err != nil {
@@ -145,8 +151,12 @@ func TestBulkUpdate(t *testing.T) {
 		{Filter: productID.Is(filters.Eq("p2")), Update: product{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 8, Active: true}},
 		{Filter: productID.Is(filters.Eq("p3")), Update: product{ID: "p3", Name: "Gizmo", Price: 29.99, Stock: 2, Active: true}},
 	}
-	if err := tbl.BulkUpdate(ctx, ops); err != nil {
+	ids, err := tbl.BulkUpdate(ctx, ops)
+	if err != nil {
 		t.Fatalf("BulkUpdate: %v", err)
+	}
+	if len(ids) != 2 || ids[0] != "p2" || ids[1] != "p3" {
+		t.Fatalf("expected returned ids [p2 p3], got %v", ids)
 	}
 
 	p2, err := tbl.One(ctx, productID.Is(filters.Eq("p2")))

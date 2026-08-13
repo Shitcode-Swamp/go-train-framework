@@ -46,9 +46,9 @@ func (c *Collection[T]) Update(ctx context.Context, filter filters.Filtered[T], 
 	return nil, nil
 }
 
-func (c *Collection[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) error {
+func (c *Collection[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) ([]any, error) {
 	// Implementation for bulk updating items in the MongoDB collection
-	return nil
+	return nil, nil
 }
 
 func (c *Collection[T]) One(ctx context.Context, filter filters.Filtered[T]) (T, error) {

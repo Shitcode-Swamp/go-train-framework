@@ -2,9 +2,12 @@ package postgre
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/jackc/pgx/v5"
 
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
@@ -19,22 +22,44 @@ func (s *Table[T]) Update(ctx context.Context, filter filters.Filtered[T], updat
 	return s.update(ctx, s.pool, filter, update, upsert)
 }
 
-func (s *Table[T]) update(ctx context.Context, q querier, filter filters.Filtered[T], update T, upsert bool) error {
+func (s *Table[T]) update(ctx context.Context, q querier, filter filters.Filtered[T], update T, upsert bool) (any, error) {
 	setClauses, args := s.updateSetClause(update)
 	where, whereArgs := pgsql.BuildWhere(filter, len(args))
 	args = append(args, whereArgs...)
 
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s", s.name, strings.Join(setClauses, ", "), where)
-	tag, err := q.Exec(ctx, query, args...)
-	if err != nil {
-		return pgsql.TranslateError(err)
+
+	if s.mapping.PKIndex < 0 {
+		tag, err := q.Exec(ctx, query, args...)
+		if err != nil {
+			return nil, pgsql.TranslateError(err)
+		}
+		if tag.RowsAffected() == 0 && upsert {
+			return s.insert(ctx, q, update)
+		}
+		return nil, nil
 	}
 
-	if tag.RowsAffected() == 0 && upsert {
-		_, err := s.insert(ctx, q, update)
-		return pgsql.TranslateError(err)
+	id, err := s.updateReturningID(ctx, q, query, args)
+	if err != nil {
+		return nil, pgsql.TranslateError(err)
 	}
-	return nil
+	if id == nil && upsert {
+		return s.insert(ctx, q, update)
+	}
+	return id, nil
+}
+
+func (s *Table[T]) updateReturningID(ctx context.Context, q querier, query string, args []any) (any, error) {
+	query += fmt.Sprintf(" RETURNING %s", s.mapping.Columns[s.mapping.PKIndex].Column)
+	var id any
+	if err := q.QueryRow(ctx, query, args...).Scan(&id); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return id, nil
 }
 
 func (s *Table[T]) updateSetClause(update T) (clauses []string, args []any) {
@@ -49,17 +74,24 @@ func (s *Table[T]) updateSetClause(update T) (clauses []string, args []any) {
 	return clauses, args
 }
 
-func (s *Table[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) error {
+func (s *Table[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) ([]any, error) {
 	if len(ops) == 0 {
-		return nil
+		return nil, nil
 	}
 
-	return s.withTx(ctx, func(q querier) error {
-		for _, op := range ops {
-			if err := s.update(ctx, q, op.Filter, op.Update, op.Upsert); err != nil {
+	ids := make([]any, len(ops))
+	err := s.withTx(ctx, func(q querier) error {
+		for i, op := range ops {
+			id, err := s.update(ctx, q, op.Filter, op.Update, op.Upsert)
+			if err != nil {
 				return err
 			}
+			ids[i] = id
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
+	return ids, nil
 }
