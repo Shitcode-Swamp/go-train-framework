@@ -1,0 +1,51 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
+  "elements": [
+    {
+      "id": "p31nRYoPPeqCNg3u0SI_5",
+      "type": "text",
+      "x": 161.578125,
+      "y": 170.3984375,
+      "width": 503.4597473144531,
+      "height": 375,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "a0",
+      "roundness": null,
+      "seed": 1736362616,
+      "version": 291,
+      "versionNonce": 439612024,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1786310670312,
+      "link": null,
+      "locked": false,
+      "text": "Core DB operations:\nInsert\nBulkInsert\nUpdate (Upsert)\nBulkUpdate (BulkUpsert)\nOne\nMany\nDelete\n\nAggregation operations\n- Convertion of the data type from one to another\n- Grouping\n- Sort\n- Limit, skip\n- Joining data from multiple collections",
+      "fontSize": 20,
+      "fontFamily": 5,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Core DB operations:\nInsert\nBulkInsert\nUpdate (Upsert)\nBulkUpdate (BulkUpsert)\nOne\nMany\nDelete\n\nAggregation operations\n- Convertion of the data type from one to another\n- Grouping\n- Sort\n- Limit, skip\n- Joining data from multiple collections",
+      "autoResize": true,
+      "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}
