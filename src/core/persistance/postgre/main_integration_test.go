@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	tcpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
 )
 
 const (

@@ -1,9 +1,9 @@
-package contract
+package store
 
 import (
 	"context"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
 )
 
 type InsertOptions struct{}
@@ -13,8 +13,8 @@ type Store[T any] interface {
 	Insert(ctx context.Context, doc T, options ...InsertOptions) (id any, err error)
 	BulkInsert(ctx context.Context, docs []T, options ...InsertOptions) (ids []any, err error)
 
-	Update(ctx context.Context, filter filters.Filtered[T], update T, options ...UpdateOptions) error
-	BulkUpdate(ctx context.Context, ops []BulkUpdateOp[T]) error
+	Update(ctx context.Context, filter filters.Filtered[T], update T, options ...UpdateOptions) (any, error)
+	BulkUpdate(ctx context.Context, ops []BulkUpdateOp[T]) ([]any, error)
 
 	One(ctx context.Context, filter filters.Filtered[T]) (T, error)
 	Many(ctx context.Context, filter filters.Filtered[T]) ([]T, error)

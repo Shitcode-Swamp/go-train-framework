@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/contract"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
 
-func (s *Table[T]) Insert(ctx context.Context, doc T, options ...contract.InsertOptions) (any, error) {
+func (s *Table[T]) Insert(ctx context.Context, doc T, options ...store.InsertOptions) (any, error) {
 	return s.insert(ctx, s.pool, doc)
 }
 
@@ -47,7 +47,7 @@ func (s *Table[T]) insertReturningID(ctx context.Context, q querier, query strin
 	return id, nil
 }
 
-func (s *Table[T]) BulkInsert(ctx context.Context, docs []T, options ...contract.InsertOptions) ([]any, error) {
+func (s *Table[T]) BulkInsert(ctx context.Context, docs []T, options ...store.InsertOptions) ([]any, error) {
 	if len(docs) == 0 {
 		return nil, nil
 	}

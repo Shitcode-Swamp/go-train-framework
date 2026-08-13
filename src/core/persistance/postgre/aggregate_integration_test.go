@@ -4,19 +4,19 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/contract"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre/aggregate"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/aggregate"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
 
 func TestAggregateGroupWithHavingAndSort(t *testing.T) {
 	pool := requirePool(t)
 	ctx := context.Background()
 	resetSchema(t, ctx, pool)
-	store := postgre.New[product](pool, productsTable)
+	tbl := postgre.New[product](pool, productsTable)
 
-	_, err := store.BulkInsert(ctx, []product{
+	_, err := tbl.BulkInsert(ctx, []product{
 		{ID: "p1", Name: "Widget", Price: 9.99, Stock: 10, Active: true},
 		{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 8, Active: true},
 		{ID: "p4", Name: "Doohickey", Price: 4.99, Stock: 7, Active: true},
@@ -30,12 +30,12 @@ func TestAggregateGroupWithHavingAndSort(t *testing.T) {
 	itemCount := filters.Field[product, int64]("item_count")
 	totalQty := filters.Field[product, int64]("total_qty")
 
-	pipeline := []contract.Stage{
-		contract.Match(productActive.Is(filters.Eq(true))),
-		contract.Group([]string{productActive.String()}, contract.Count(itemCount.String()), contract.Sum(productStock.String(), totalQty.String())),
-		contract.Match(totalQty.Is(filters.Gt(int64(0)))),
-		contract.Sort(contract.Desc(totalQty.String())),
-		contract.Limit(5),
+	pipeline := []store.Stage{
+		store.Match(productActive.Is(filters.Eq(true))),
+		store.Group([]string{productActive.String()}, store.Count(itemCount.String()), store.Sum(productStock.String(), totalQty.String())),
+		store.Match(totalQty.Is(filters.Gt(int64(0)))),
+		store.Sort(store.Desc(totalQty.String())),
+		store.Limit(5),
 	}
 
 	results, err := agg.Aggregate(ctx, pipeline)
@@ -55,9 +55,9 @@ func TestAggregateJoin(t *testing.T) {
 	pool := requirePool(t)
 	ctx := context.Background()
 	resetSchema(t, ctx, pool)
-	store := postgre.New[product](pool, productsTable)
+	tbl := postgre.New[product](pool, productsTable)
 
-	_, err := store.BulkInsert(ctx, []product{
+	_, err := tbl.BulkInsert(ctx, []product{
 		{ID: "p1", Name: "Widget", Price: 9.99, Stock: 10, Active: true},
 		{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 8, Active: true},
 	})
@@ -80,10 +80,10 @@ func TestAggregateJoin(t *testing.T) {
 	totalOrdered := filters.Field[product, int64]("total_ordered")
 
 	agg := aggregate.New[product, orderedTotal](pool, productsTable)
-	pipeline := []contract.Stage{
-		contract.Match(productID.Is(filters.In("p1", "p2"))),
-		contract.Join(ordersTable, productID.String(), orderProductID.String(), "o"),
-		contract.Group([]string{productID.String()}, contract.Sum(joinedQuantity.String(), totalOrdered.String())),
+	pipeline := []store.Stage{
+		store.Match(productID.Is(filters.In("p1", "p2"))),
+		store.Join(ordersTable, productID.String(), orderProductID.String(), "o"),
+		store.Group([]string{productID.String()}, store.Sum(joinedQuantity.String(), totalOrdered.String())),
 	}
 	results, err := agg.Aggregate(ctx, pipeline)
 	if err != nil {

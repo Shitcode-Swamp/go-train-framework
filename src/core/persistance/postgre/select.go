@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
 )
 
 func (s *Table[T]) selectQuery(filter filters.Filtered[T], limit int) (string, []any) {

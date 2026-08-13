@@ -6,12 +6,12 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/contract"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
 
-func (s *Table[T]) Update(ctx context.Context, filter filters.Filtered[T], update T, options ...contract.UpdateOptions) error {
+func (s *Table[T]) Update(ctx context.Context, filter filters.Filtered[T], update T, options ...store.UpdateOptions) (any, error) {
 	upsert := false
 	if len(options) > 0 && options[0].Upsert != nil {
 		upsert = *options[0].Upsert
@@ -49,7 +49,7 @@ func (s *Table[T]) updateSetClause(update T) (clauses []string, args []any) {
 	return clauses, args
 }
 
-func (s *Table[T]) BulkUpdate(ctx context.Context, ops []contract.BulkUpdateOp[T]) error {
+func (s *Table[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) error {
 	if len(ops) == 0 {
 		return nil
 	}

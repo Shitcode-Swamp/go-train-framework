@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/contract"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
 
 const (
@@ -29,27 +29,27 @@ func TranslateError(err error) error {
 		return nil
 	}
 	if errors.Is(err, pgx.ErrNoRows) {
-		return fmt.Errorf("%w: %v", contract.ErrNotFound, err)
+		return fmt.Errorf("%w: %v", store.ErrNotFound, err)
 	}
 
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch {
 		case pgErr.Code == errCodeUniqueViolation:
-			return fmt.Errorf("%w: %v", contract.ErrDuplicateKey, err)
+			return fmt.Errorf("%w: %v", store.ErrDuplicateKey, err)
 		case pgErr.Code == errCodeForeignKeyViolation || pgErr.Code == errCodeCheckViolation || pgErr.Code == errCodeNotNullViolation:
-			return fmt.Errorf("%w: %v", contract.ErrConstraintViolation, err)
+			return fmt.Errorf("%w: %v", store.ErrConstraintViolation, err)
 		case pgErr.Code == errCodeSerializationFailure || pgErr.Code == errCodeDeadlockDetected:
-			return fmt.Errorf("%w: %v", contract.ErrConflict, err)
+			return fmt.Errorf("%w: %v", store.ErrConflict, err)
 		case strings.HasPrefix(pgErr.Code, errClassConnectionException):
-			return fmt.Errorf("%w: %v", contract.ErrConnection, err)
+			return fmt.Errorf("%w: %v", store.ErrConnection, err)
 		}
 		return err
 	}
 
 	var netErr net.Error
 	if errors.As(err, &netErr) || errors.Is(err, context.DeadlineExceeded) {
-		return fmt.Errorf("%w: %v", contract.ErrConnection, err)
+		return fmt.Errorf("%w: %v", store.ErrConnection, err)
 	}
 
 	return err

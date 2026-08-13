@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
 )
 
 type sqlBuilder struct {
