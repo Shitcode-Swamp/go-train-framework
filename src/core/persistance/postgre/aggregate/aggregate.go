@@ -1,4 +1,4 @@
-package aggregate
+package postgre_aggregate
 
 import (
 	"context"

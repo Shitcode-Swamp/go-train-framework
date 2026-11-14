@@ -151,7 +151,7 @@ func TestBulkUpdate(t *testing.T) {
 		{Filter: productID.Is(filters.Eq("p2")), Update: product{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 8, Active: true}},
 		{Filter: productID.Is(filters.Eq("p3")), Update: product{ID: "p3", Name: "Gizmo", Price: 29.99, Stock: 2, Active: true}},
 	}
-	ids, err := tbl.BulkUpdate(ctx, ops)
+	ids, err := tbl.BulkWrite(ctx, ops)
 	if err != nil {
 		t.Fatalf("BulkUpdate: %v", err)
 	}
@@ -176,7 +176,7 @@ func TestBulkUpdate(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestDeleteOne(t *testing.T) {
 	pool := requirePool(t)
 	ctx := context.Background()
 	resetSchema(t, ctx, pool)
@@ -186,11 +186,72 @@ func TestDelete(t *testing.T) {
 		t.Fatalf("seed Insert: %v", err)
 	}
 
-	if err := tbl.Delete(ctx, productID.Is(filters.Eq("p3"))); err != nil {
-		t.Fatalf("Delete: %v", err)
+	if err := tbl.DeleteOne(ctx, productID.Is(filters.Eq("p3"))); err != nil {
+		t.Fatalf("DeleteOne: %v", err)
 	}
 	_, err := tbl.One(ctx, productID.Is(filters.Eq("p3")))
 	if !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("expected ErrNotFound after delete, got %v", err)
+	}
+}
+
+func TestDeleteOneLimitsToSingleRow(t *testing.T) {
+	pool := requirePool(t)
+	ctx := context.Background()
+	resetSchema(t, ctx, pool)
+	tbl := postgre.New[product](pool, productsTable)
+
+	if _, err := tbl.BulkInsert(ctx, []product{
+		{ID: "p1", Name: "Widget", Price: 9.99, Stock: 10, Active: true},
+		{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 8, Active: true},
+	}); err != nil {
+		t.Fatalf("seed BulkInsert: %v", err)
+	}
+
+	if err := tbl.DeleteOne(ctx, productActive.Is(filters.Eq(true))); err != nil {
+		t.Fatalf("DeleteOne: %v", err)
+	}
+
+	got, err := tbl.Many(ctx, productActive.Is(filters.Eq(true)))
+	if err != nil {
+		t.Fatalf("Many: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("expected exactly 1 row left after DeleteOne, got %d: %+v", len(got), got)
+	}
+}
+
+func TestDeleteMany(t *testing.T) {
+	pool := requirePool(t)
+	ctx := context.Background()
+	resetSchema(t, ctx, pool)
+	tbl := postgre.New[product](pool, productsTable)
+
+	if _, err := tbl.BulkInsert(ctx, []product{
+		{ID: "p1", Name: "Widget", Price: 9.99, Stock: 10, Active: true},
+		{ID: "p2", Name: "Gadget", Price: 19.99, Stock: 8, Active: true},
+		{ID: "p3", Name: "Gizmo", Price: 29.99, Stock: 0, Active: false},
+	}); err != nil {
+		t.Fatalf("seed BulkInsert: %v", err)
+	}
+
+	if err := tbl.DeleteMany(ctx, productActive.Is(filters.Eq(true))); err != nil {
+		t.Fatalf("DeleteMany: %v", err)
+	}
+
+	got, err := tbl.Many(ctx, productActive.Is(filters.Eq(true)))
+	if err != nil {
+		t.Fatalf("Many: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("expected no active rows left after DeleteMany, got %d: %+v", len(got), got)
+	}
+
+	remaining, err := tbl.One(ctx, productID.Is(filters.Eq("p3")))
+	if err != nil {
+		t.Fatalf("One p3: %v", err)
+	}
+	if remaining.ID != "p3" {
+		t.Fatalf("expected p3 to remain untouched, got %+v", remaining)
 	}
 }

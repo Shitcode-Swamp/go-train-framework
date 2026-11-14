@@ -43,7 +43,17 @@ func (s *Table[T]) Many(ctx context.Context, filter filters.Filtered[T]) ([]T, e
 	return results, nil
 }
 
-func (s *Table[T]) Delete(ctx context.Context, filter filters.Filtered[T]) error {
+func (s *Table[T]) DeleteOne(ctx context.Context, filter filters.Filtered[T]) error {
+	where, args := pgsql.BuildWhere(filter, 0)
+	query := fmt.Sprintf(
+		"DELETE FROM %[1]s WHERE ctid IN (SELECT ctid FROM %[1]s WHERE %[2]s LIMIT 1)",
+		s.name, where,
+	)
+	_, err := s.pool.Exec(ctx, query, args...)
+	return pgsql.TranslateError(err)
+}
+
+func (s *Table[T]) DeleteMany(ctx context.Context, filter filters.Filtered[T]) error {
 	where, args := pgsql.BuildWhere(filter, 0)
 	query := fmt.Sprintf("DELETE FROM %s WHERE %s", s.name, where)
 	_, err := s.pool.Exec(ctx, query, args...)

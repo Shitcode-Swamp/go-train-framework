@@ -74,7 +74,7 @@ func (s *Table[T]) updateSetClause(update T) (clauses []string, args []any) {
 	return clauses, args
 }
 
-func (s *Table[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) ([]any, error) {
+func (s *Table[T]) BulkWrite(ctx context.Context, ops []store.BulkUpdateOp[T]) ([]any, error) {
 	if len(ops) == 0 {
 		return nil, nil
 	}

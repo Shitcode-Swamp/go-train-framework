@@ -25,7 +25,7 @@ func TestAggregateGroupWithHavingAndSort(t *testing.T) {
 		t.Fatalf("seed BulkInsert: %v", err)
 	}
 
-	agg := aggregate.New[product, stockSummary](pool, productsTable)
+	agg := postgre_aggregate.New[product, stockSummary](pool, productsTable)
 	productStock := filters.Field[product, int]("stock")
 	itemCount := filters.Field[product, int64]("item_count")
 	totalQty := filters.Field[product, int64]("total_qty")
@@ -79,7 +79,7 @@ func TestAggregateJoin(t *testing.T) {
 	joinedQuantity := filters.Field[order, int]("o.quantity")
 	totalOrdered := filters.Field[product, int64]("total_ordered")
 
-	agg := aggregate.New[product, orderedTotal](pool, productsTable)
+	agg := postgre_aggregate.New[product, orderedTotal](pool, productsTable)
 	pipeline := []store.Stage{
 		store.Match(productID.Is(filters.In("p1", "p2"))),
 		store.Join(ordersTable, productID.String(), orderProductID.String(), "o"),

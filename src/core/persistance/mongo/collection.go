@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/mongo/internal"
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/array"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -20,49 +20,74 @@ func New[T any](collection *mongo.Collection) store.Store[T] {
 }
 
 func (c *Collection[T]) Insert(ctx context.Context, doc T, options ...store.InsertOptions) (any, error) {
-	res, err := c.collection.InsertOne(ctx, doc, toInsertMongoOpt(options)...)
+	res, err := c.collection.InsertOne(ctx, doc, internal.ToInsertMongoOpt(options)...)
 	if err != nil {
-		return nil, fromMongoErr(err) 
+		return nil, internal.FromMongoErr(err)
 	}
 	return res.InsertedID, nil
 }
 
 func (c *Collection[T]) BulkInsert(ctx context.Context, docs []T, options ...store.InsertOptions) ([]any, error) {
-	results, err := c.collection.InsertMany(ctx, docs, toInsertManyMongoOpt(options)...)
+	results, err := c.collection.InsertMany(ctx, docs, internal.ToInsertManyMongoOpt(options)...)
 	if err != nil {
-		return nil, fromMongoErr(err) 
+		return nil, internal.FromMongoErr(err)
 	}
-	return results.InsertedIDs , nil
+	return results.InsertedIDs, nil
 }
 
-func (c *Collection[T]) Update(ctx context.Context, filter filters.Filtered[T], update T, options ...store.UpdateOptions) (any , error) {
-	res, err := c.collection.UpdateOne(ctx, filter, update, toUpdateOneMongoOpt(options)...)
+func (c *Collection[T]) Update(ctx context.Context, filter filters.Filtered[T], update T, options ...store.UpdateOptions) (any, error) {
+	res, err := c.collection.UpdateOne(ctx, internal.ToMongoFilter(filter), update, internal.ToUpdateOneMongoOpt(options)...)
 	if err != nil {
-		return nil, fromMongoErr(err) 
-	}	
-	if array.Some(options, func(e store.UpdateOptions) bool { return *e.Upsert }) {
-		return res.UpsertedID, err
+		return nil, internal.FromMongoErr(err)
 	}
-	return nil, nil
+	return res.UpsertedID, err
 }
 
-func (c *Collection[T]) BulkUpdate(ctx context.Context, ops []store.BulkUpdateOp[T]) ([]any, error) {
-	// Implementation for bulk updating items in the MongoDB collection
+func (c *Collection[T]) BulkWrite(ctx context.Context, ops []store.BulkUpdateOp[T]) ([]any, error) {
+	_, err := c.collection.BulkWrite(ctx, internal.ToMongoWriteModels(ops))
+	if err != nil {
+		return nil, internal.FromMongoErr(err)
+	}
 	return nil, nil
 }
 
 func (c *Collection[T]) One(ctx context.Context, filter filters.Filtered[T]) (T, error) {
-	// Implementation for finding items in the MongoDB collection based on a filter
-	var a T
-	return a, nil
+	res := c.collection.FindOne(ctx, internal.ToMongoFilter(filter))
+	var doc T
+	err := res.Err()
+	if err != nil {
+		return doc, internal.FromMongoErr(err)
+	}
+	if err = res.Decode(&doc); err != nil {
+		return doc, internal.FromMongoErr(err)
+	}
+	return doc, nil
 }
 
 func (c *Collection[T]) Many(ctx context.Context, filter filters.Filtered[T]) ([]T, error) {
-	// Implementation for finding items in the MongoDB collection based on a filter
-	return nil, nil
+	cursor, err := c.collection.Find(ctx, internal.ToMongoFilter(filter))
+	if err != nil {
+		return nil, internal.FromMongoErr(err)
+	}
+	docs := make([]T, 0)
+	if err = cursor.All(ctx, docs); err != nil {
+		return nil, internal.FromMongoErr(err)
+	}
+	return docs, nil
 }
 
-func (c *Collection[T]) Delete(ctx context.Context, filter filters.Filtered[T]) error {
-	// Implementation for deleting an item from the MongoDB collection
+func (c *Collection[T]) DeleteOne(ctx context.Context, filter filters.Filtered[T]) error {
+	_, err := c.collection.DeleteOne(ctx, internal.ToMongoFilter(filter))
+	if err != nil {
+		return internal.FromMongoErr(err)
+	}
+	return nil
+}
+
+func (c *Collection[T]) DeleteMany(ctx context.Context, filter filters.Filtered[T]) error {
+	_, err := c.collection.DeleteMany(ctx, internal.ToMongoFilter(filter))
+	if err != nil {
+		return internal.FromMongoErr(err)
+	}
 	return nil
 }
