@@ -19,10 +19,10 @@ func (s *Table[T]) Update(ctx context.Context, filter filters.Filtered[T], updat
 	if len(options) > 0 && options[0].Upsert != nil {
 		upsert = *options[0].Upsert
 	}
-	return s.update(ctx, s.pool, filter, update, upsert)
+	return s.update(ctx, s.queryable(ctx), filter, update, upsert)
 }
 
-func (s *Table[T]) update(ctx context.Context, q querier, filter filters.Filtered[T], update T, upsert bool) (any, error) {
+func (s *Table[T]) update(ctx context.Context, q pgsql.Querier, filter filters.Filtered[T], update T, upsert bool) (any, error) {
 	setClauses, args := s.updateSetClause(update)
 	where, whereArgs := pgsql.BuildWhere(filter, len(args))
 	args = append(args, whereArgs...)
@@ -50,7 +50,7 @@ func (s *Table[T]) update(ctx context.Context, q querier, filter filters.Filtere
 	return id, nil
 }
 
-func (s *Table[T]) updateReturningID(ctx context.Context, q querier, query string, args []any) (any, error) {
+func (s *Table[T]) updateReturningID(ctx context.Context, q pgsql.Querier, query string, args []any) (any, error) {
 	query += fmt.Sprintf(" RETURNING %s", s.mapping.Columns[s.mapping.PKIndex].Column)
 	var id any
 	if err := q.QueryRow(ctx, query, args...).Scan(&id); err != nil {
@@ -80,7 +80,7 @@ func (s *Table[T]) BulkWrite(ctx context.Context, ops []store.BulkUpdateOp[T]) (
 	}
 
 	ids := make([]any, len(ops))
-	err := s.withTx(ctx, func(q querier) error {
+	err := s.withTx(ctx, func(q pgsql.Querier) error {
 		for i, op := range ops {
 			id, err := s.update(ctx, q, op.Filter, op.Update, op.Upsert)
 			if err != nil {

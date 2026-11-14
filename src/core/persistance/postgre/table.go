@@ -4,19 +4,11 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
 	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
-
-type querier interface {
-	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
-	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-}
 
 type Table[T any] struct {
 	pool    *pgxpool.Pool
@@ -43,7 +35,15 @@ func (s *Table[T]) columnNames() []string {
 	return cols
 }
 
-func (s *Table[T]) withTx(ctx context.Context, fn func(querier) error) error {
+func (s *Table[T]) queryable(ctx context.Context) pgsql.Querier {
+	return pgsql.Queryable(ctx, s.pool)
+}
+
+func (s *Table[T]) withTx(ctx context.Context, fn func(pgsql.Querier) error) error {
+	if tx, ok := pgsql.TxFromContext(ctx); ok {
+		return fn(tx)
+	}
+
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return pgsql.TranslateError(err)

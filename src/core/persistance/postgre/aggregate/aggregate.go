@@ -54,7 +54,7 @@ func (p *Pipeline[T, U]) Aggregate(ctx context.Context, pipeline []store.Stage) 
 	}
 
 	query, args := qb.build(p.outMapping)
-	rows, err := p.pool.Query(ctx, query, args...)
+	rows, err := pgsql.Queryable(ctx, p.pool).Query(ctx, query, args...)
 	if err != nil {
 		return nil, pgsql.TranslateError(err)
 	}

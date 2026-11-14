@@ -21,7 +21,7 @@ func (s *Table[T]) selectQuery(filter filters.Filtered[T], limit int) (string, [
 func (s *Table[T]) One(ctx context.Context, filter filters.Filtered[T]) (T, error) {
 	var zero T
 	query, args := s.selectQuery(filter, 1)
-	result, err := pgsql.ScanInto[T](s.pool.QueryRow(ctx, query, args...), s.mapping)
+	result, err := pgsql.ScanInto[T](s.queryable(ctx).QueryRow(ctx, query, args...), s.mapping)
 	if err != nil {
 		return zero, pgsql.TranslateError(err)
 	}
@@ -30,7 +30,7 @@ func (s *Table[T]) One(ctx context.Context, filter filters.Filtered[T]) (T, erro
 
 func (s *Table[T]) Many(ctx context.Context, filter filters.Filtered[T]) ([]T, error) {
 	query, args := s.selectQuery(filter, 0)
-	rows, err := s.pool.Query(ctx, query, args...)
+	rows, err := s.queryable(ctx).Query(ctx, query, args...)
 	if err != nil {
 		return nil, pgsql.TranslateError(err)
 	}
@@ -49,13 +49,13 @@ func (s *Table[T]) DeleteOne(ctx context.Context, filter filters.Filtered[T]) er
 		"DELETE FROM %[1]s WHERE ctid IN (SELECT ctid FROM %[1]s WHERE %[2]s LIMIT 1)",
 		s.name, where,
 	)
-	_, err := s.pool.Exec(ctx, query, args...)
+	_, err := s.queryable(ctx).Exec(ctx, query, args...)
 	return pgsql.TranslateError(err)
 }
 
 func (s *Table[T]) DeleteMany(ctx context.Context, filter filters.Filtered[T]) error {
 	where, args := pgsql.BuildWhere(filter, 0)
 	query := fmt.Sprintf("DELETE FROM %s WHERE %s", s.name, where)
-	_, err := s.pool.Exec(ctx, query, args...)
+	_, err := s.queryable(ctx).Exec(ctx, query, args...)
 	return pgsql.TranslateError(err)
 }
