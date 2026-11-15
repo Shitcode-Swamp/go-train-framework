@@ -1,4 +1,4 @@
-package aggregate
+package postgre_aggregate
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/contract"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
 
 type Pipeline[T, U any] struct {
@@ -17,7 +17,7 @@ type Pipeline[T, U any] struct {
 	outMapping pgsql.TableMapping
 }
 
-func New[T, U any](pool *pgxpool.Pool, table string) contract.AggregateStore[T, U] {
+func New[T, U any](pool *pgxpool.Pool, table string) store.AggregateStore[T, U] {
 	var zero U
 	return &Pipeline[T, U]{
 		pool:       pool,
@@ -26,35 +26,35 @@ func New[T, U any](pool *pgxpool.Pool, table string) contract.AggregateStore[T, 
 	}
 }
 
-var _ contract.AggregateStore[struct{}, struct{}] = (*Pipeline[struct{}, struct{}])(nil)
+var _ store.AggregateStore[struct{}, struct{}] = (*Pipeline[struct{}, struct{}])(nil)
 
-func (p *Pipeline[T, U]) Aggregate(ctx context.Context, pipeline []contract.Stage) ([]U, error) {
+func (p *Pipeline[T, U]) Aggregate(ctx context.Context, pipeline []store.Stage) ([]U, error) {
 	qb := newAggregateQueryBuilder(p.table)
 	for _, stage := range pipeline {
 		switch st := stage.(type) {
-		case contract.FilterStage[T]:
+		case store.FilterStage[T]:
 			applyFilterStage(qb, st)
-		case contract.ConvertStage:
+		case store.ConvertStage:
 			qb.applyConvert(st)
-		case contract.GroupStage:
+		case store.GroupStage:
 			qb.applyGroup(st)
-		case contract.SortStage:
+		case store.SortStage:
 			qb.applySort(st)
-		case contract.LimitStage:
+		case store.LimitStage:
 			qb.applyLimit(st)
-		case contract.SkipStage:
+		case store.SkipStage:
 			qb.applySkip(st)
-		case contract.JoinStage:
+		case store.JoinStage:
 			qb.applyJoin(st)
-		case contract.ProjectStage:
+		case store.ProjectStage:
 			qb.applyProject(st)
 		default:
-			return nil, fmt.Errorf("%w: unrecognized aggregation stage %T", contract.ErrUnsupportedOperation, stage)
+			return nil, fmt.Errorf("%w: unrecognized aggregation stage %T", store.ErrUnsupportedOperation, stage)
 		}
 	}
 
 	query, args := qb.build(p.outMapping)
-	rows, err := p.pool.Query(ctx, query, args...)
+	rows, err := pgsql.Queryable(ctx, p.pool).Query(ctx, query, args...)
 	if err != nil {
 		return nil, pgsql.TranslateError(err)
 	}
@@ -67,7 +67,7 @@ func (p *Pipeline[T, U]) Aggregate(ctx context.Context, pipeline []contract.Stag
 	return results, nil
 }
 
-func applyFilterStage[T any](b *aggregateQueryBuilder, fs contract.FilterStage[T]) {
+func applyFilterStage[T any](b *aggregateQueryBuilder, fs store.FilterStage[T]) {
 	resolved := pgsql.SubstituteFields(fs.Filter, b.resolve)
 	clause, args := pgsql.BuildWhere(resolved, len(b.args))
 	b.args = append(b.args, args...)

@@ -6,15 +6,15 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/contract"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/store/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
 )
 
-func (s *Table[T]) Insert(ctx context.Context, doc T, options ...contract.InsertOptions) (any, error) {
-	return s.insert(ctx, s.pool, doc)
+func (s *Table[T]) Insert(ctx context.Context, doc T, options ...store.InsertOptions) (any, error) {
+	return s.insert(ctx, s.queryable(ctx), doc)
 }
 
-func (s *Table[T]) insert(ctx context.Context, q querier, doc T) (any, error) {
+func (s *Table[T]) insert(ctx context.Context, q pgsql.Querier, doc T) (any, error) {
 	cols, placeholders, args := s.insertColumns(doc)
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", s.name, strings.Join(cols, ", "), strings.Join(placeholders, ", "))
 
@@ -38,7 +38,7 @@ func (s *Table[T]) insertColumns(doc T) (cols, placeholders []string, args []any
 	return cols, placeholders, args
 }
 
-func (s *Table[T]) insertReturningID(ctx context.Context, q querier, query string, args []any) (any, error) {
+func (s *Table[T]) insertReturningID(ctx context.Context, q pgsql.Querier, query string, args []any) (any, error) {
 	query += fmt.Sprintf(" RETURNING %s", s.mapping.Columns[s.mapping.PKIndex].Column)
 	var id any
 	if err := q.QueryRow(ctx, query, args...).Scan(&id); err != nil {
@@ -47,13 +47,13 @@ func (s *Table[T]) insertReturningID(ctx context.Context, q querier, query strin
 	return id, nil
 }
 
-func (s *Table[T]) BulkInsert(ctx context.Context, docs []T, options ...contract.InsertOptions) ([]any, error) {
+func (s *Table[T]) BulkInsert(ctx context.Context, docs []T, options ...store.InsertOptions) ([]any, error) {
 	if len(docs) == 0 {
 		return nil, nil
 	}
 
 	ids := make([]any, len(docs))
-	err := s.withTx(ctx, func(q querier) error {
+	err := s.withTx(ctx, func(q pgsql.Querier) error {
 		for i, doc := range docs {
 			id, err := s.insert(ctx, q, doc)
 			if err != nil {

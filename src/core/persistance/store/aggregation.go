@@ -1,6 +1,6 @@
-package contract
+package store
 
-import "github.com/Shitcode-Swamp/go-train-framework/src/core/store/filters"
+import "github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
 
 type Stage interface {
 	stage()
