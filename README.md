@@ -4,6 +4,8 @@
 
 [![Latest release](https://img.shields.io/github/v/release/Shitcode-Swamp/go-train-framework)](https://github.com/Shitcode-Swamp/go-train-framework/releases/latest)
 
+[![Go version](https://img.shields.io/github/go-mod/go-version/Shitcode-Swamp/go-train-framework)](go.mod)
+
 Custom framework made in educational puposes.
 
 ## Roadmap
