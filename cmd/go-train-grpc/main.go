@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/grpcgen"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/config"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/flags"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/grpcgen"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/config"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/flags"
 )
 
 func main() {

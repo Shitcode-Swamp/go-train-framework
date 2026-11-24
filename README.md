@@ -117,7 +117,7 @@ It clones the registry, then shells out to `protoc` with the `go` and
 must be on your `PATH`.
 
 ```sh
-go install github.com/Shitcode-Swamp/go-train-framework/cmd/go-train-grpc@latest
+go install github.com/Shitcode-Swamp/go-train-framework/v3/cmd/go-train-grpc@latest
 go-train-grpc -config=./go-train.yaml
 ```
 
@@ -172,7 +172,7 @@ products := postgre.New[Product](pool, "products") // store.Store[Product]
 // MongoDB - import our adapter aliased, since you also need the driver's
 // own "mongo" package (go.mongodb.org/mongo-driver/v2/mongo) to build the
 // *mongo.Client/*mongo.Collection in the first place:
-//   mongodb "github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/mongo"
+//   mongodb "github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/mongo"
 client, _ := mongo.Connect(options.Client().ApplyURI(uri))
 collection := client.Database("shop").Collection("products")
 products := mongodb.New[Product](collection) // store.Store[Product]
@@ -256,7 +256,7 @@ source entity and `U` is the shape results get scanned into. Only the
 Postgres adapter implements it today, via `postgre/aggregate`:
 
 ```go
-import pgaggregate "github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/aggregate"
+import pgaggregate "github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/postgre/aggregate"
 
 type StockSummary struct {
 	Active   bool  `store:"active"`
@@ -364,7 +364,7 @@ The command lives at `cmd/go-train` so it can be installed like any other Go too
 **Global install** (puts `go-train` on your `$GOBIN`/`$GOPATH/bin`):
 
 ```sh
-go install github.com/Shitcode-Swamp/go-train-framework/cmd/go-train@latest
+go install github.com/Shitcode-Swamp/go-train-framework/v3/cmd/go-train@latest
 go-train -root=./path/to/watch -ctxPath=./path/to/output
 ```
 
@@ -372,7 +372,7 @@ go-train -root=./path/to/watch -ctxPath=./path/to/output
 repo's `go.mod` via a `tool` directive):
 
 ```sh
-go get -tool github.com/Shitcode-Swamp/go-train-framework/cmd/go-train@latest
+go get -tool github.com/Shitcode-Swamp/go-train-framework/v3/cmd/go-train@latest
 go tool go-train -root=./path/to/watch -ctxPath=./path/to/output
 ```
 
@@ -380,5 +380,5 @@ While developing locally without a published module, point a consuming repo's
 `go.mod` at your local checkout instead:
 
 ```go
-replace github.com/Shitcode-Swamp/go-train-framework => /path/to/go-train-framework
+replace github.com/Shitcode-Swamp/go-train-framework/v3 => /path/to/go-train-framework
 ```

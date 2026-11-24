@@ -4,9 +4,9 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/injection"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
-	utils_strings "github.com/Shitcode-Swamp/go-train-framework/src/utils/strings"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/packages"
+	utils_strings "github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/strings"
 )
 
 type Parser interface {

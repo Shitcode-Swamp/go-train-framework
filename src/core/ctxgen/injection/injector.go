@@ -1,8 +1,8 @@
 package injection
 
 import (
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/sets"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/packages"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/sets"
 )
 
 const NoGetterFlag = "no-getter"

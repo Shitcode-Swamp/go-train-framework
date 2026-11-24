@@ -3,7 +3,7 @@ package gin_adapter
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/contract"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/controller/contract"
 )
 
 type Controller struct {

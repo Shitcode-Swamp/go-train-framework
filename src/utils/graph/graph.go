@@ -3,7 +3,7 @@ package graph
 import (
 	"errors"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/queue"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/queue"
 )
 
 var ErrGraphHasCycle = errors.New("Graph has cycle")

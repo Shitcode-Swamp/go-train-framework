@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/injection"
 )
 
 type Tree interface {

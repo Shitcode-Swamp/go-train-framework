@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/factory"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/initialization"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/injection"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/parsers"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/render"
-	"github.com/Shitcode-Swamp/go-train-framework/src/lexical"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/packages"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/factory"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/initialization"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/parsers"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/render"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/lexical"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/packages"
 )
 
 type sourceFile struct {

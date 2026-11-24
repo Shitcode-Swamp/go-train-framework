@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/injection"
-	"github.com/Shitcode-Swamp/go-train-framework/src/lexical"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/lexical"
 )
 
 const (

@@ -3,8 +3,8 @@ package initialization
 import (
 	"errors"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/ctxgen/injection"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/graph"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/ctxgen/injection"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/graph"
 )
 
 var ErrorInjectorNotFound = errors.New("injector not found")

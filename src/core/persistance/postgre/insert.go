@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/store"
 )
 
 func (s *Table[T]) Insert(ctx context.Context, doc T, options ...store.InsertOptions) (any, error) {

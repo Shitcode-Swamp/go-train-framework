@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/store"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 

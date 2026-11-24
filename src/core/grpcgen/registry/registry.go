@@ -10,7 +10,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/config"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/config"
 )
 
 const tokenEnvVar = "GO_TRAIN_GRPC_TOKEN"

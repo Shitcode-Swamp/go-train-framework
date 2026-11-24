@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/postgre/internal/pgsql"
 )
 
 type aggregateQueryBuilder struct {

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/contract"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/controller/contract"
 )
 
 type routeRegistry struct {

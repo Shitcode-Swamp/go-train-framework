@@ -9,9 +9,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/internal/pgsql"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/postgre/internal/pgsql"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/store"
 )
 
 func (s *Table[T]) Update(ctx context.Context, filter filters.Filtered[T], update T, options ...store.UpdateOptions) (any, error) {

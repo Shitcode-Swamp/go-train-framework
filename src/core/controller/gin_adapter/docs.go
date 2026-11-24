@@ -11,7 +11,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/swag"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/controller/contract"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/controller/contract"
 )
 
 const swaggerRoute = "/docs/*any"

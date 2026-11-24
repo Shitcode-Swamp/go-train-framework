@@ -3,7 +3,7 @@ package flags
 import (
 	"flag"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/config"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/config"
 )
 
 type Flags struct {

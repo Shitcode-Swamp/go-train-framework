@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/filters"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/postgre/aggregate"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/filters"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/postgre"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/postgre/aggregate"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/store"
 )
 
 func TestAggregateGroupWithHavingAndSort(t *testing.T) {

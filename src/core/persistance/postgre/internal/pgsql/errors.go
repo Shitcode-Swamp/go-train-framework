@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/store"
 )
 
 const (

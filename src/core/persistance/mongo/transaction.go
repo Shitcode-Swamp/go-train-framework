@@ -5,8 +5,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/mongo/internal"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/persistance/store"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/mongo/internal"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/persistance/store"
 )
 
 type Database struct {

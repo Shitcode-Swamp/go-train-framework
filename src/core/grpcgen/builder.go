@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/grpcgen/codegen"
-	"github.com/Shitcode-Swamp/go-train-framework/src/core/grpcgen/registry"
-	"github.com/Shitcode-Swamp/go-train-framework/src/utils/config"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/grpcgen/codegen"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/core/grpcgen/registry"
+	"github.com/Shitcode-Swamp/go-train-framework/v3/src/utils/config"
 )
 
 type Builder struct {
