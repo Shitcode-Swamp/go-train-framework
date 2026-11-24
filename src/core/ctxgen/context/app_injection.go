@@ -87,7 +87,7 @@ func (icb *InjectionContextBuilder) buildAppCtx() string {
 
 func (icb *InjectionContextBuilder) buildFields() []lexical.Field {
 	fields := make([]lexical.Field, 0, len(icb.injectees))
-	for _, injectee := range icb.injectees {
+	for _, injectee := range icb.exposed() {
 		fields = append(fields, icb.renderer.Field(injectee))
 	}
 	return fields
@@ -98,13 +98,43 @@ func (icb *InjectionContextBuilder) buildCtxInit() string {
 	for _, injectee := range icb.injectees {
 		body = append(body, icb.renderer.Init(injectee))
 	}
+	body = append(body, icb.discardUnused()...)
 	body = append(body, fmt.Sprintf("return &%s{", icb.contextType))
-	for _, injectee := range icb.injectees {
+	for _, injectee := range icb.exposed() {
 		body = append(body, icb.renderer.Assign(injectee))
 	}
 	body = append(body, "}")
 	fn := lexical.NewFunc(fmt.Sprintf("New%s", icb.contextType), nil, []string{"*" + icb.contextType}, body...)
 	return fn.String()
+}
+
+func (icb *InjectionContextBuilder) exposed() []*injection.Injector {
+	exposed := make([]*injection.Injector, 0, len(icb.injectees))
+	for _, injectee := range icb.injectees {
+		if injectee.HasGetter() {
+			exposed = append(exposed, injectee)
+		}
+	}
+	return exposed
+}
+
+// A no-getter dependency nobody injects is still constructed for its side
+// effects, but its local variable would otherwise fail "declared and not used".
+func (icb *InjectionContextBuilder) discardUnused() []string {
+	injected := make(map[string]struct{}, len(icb.injectees))
+	for _, injector := range icb.injectees {
+		for _, injectee := range injector.Injectees() {
+			injected[injectee.Token()] = struct{}{}
+		}
+	}
+	discards := make([]string, 0)
+	for _, injector := range icb.injectees {
+		if _, ok := injected[injector.Token()]; ok || injector.HasGetter() {
+			continue
+		}
+		discards = append(discards, fmt.Sprintf("_ = %s", injector.Token()))
+	}
+	return discards
 }
 
 func (icb *InjectionContextBuilder) buildGetters() string {

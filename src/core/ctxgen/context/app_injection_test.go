@@ -166,11 +166,56 @@ func NewUserService(
 	if strings.Contains(out, "return ctx.userService") {
 		t.Errorf("expected no getter body for userService (no-getter flag)\n--- output ---\n%s", out)
 	}
+	if strings.Contains(out, "userService *"+serviceAlias) || strings.Contains(out, "userService: userService") {
+		t.Errorf("expected no AppContext field for userService (no-getter flag)\n--- output ---\n%s", out)
+	}
+	if !strings.Contains(out, "_ = userService") {
+		t.Errorf("expected unused no-getter userService to be discarded\n--- output ---\n%s", out)
+	}
 	if !strings.Contains(out, "return ctx.db") {
 		t.Errorf("expected a getter for db\n--- output ---\n%s", out)
 	}
 	if !strings.Contains(out, "return ctx.userRepo") {
 		t.Errorf("expected a getter for userRepo\n--- output ---\n%s", out)
+	}
+}
+
+func TestGenerate_NoGetterDependencyIsLocalOnly(t *testing.T) {
+	out := generateAppContext(t, []sourceFile{
+		{path: "/virtual/repo/db.go", pkgPath: "example.com/repo", src: `package repo
+
+// @Injection(db, no-getter)
+func NewDB() *DB {
+	return nil
+}
+`},
+		{path: "/virtual/repo/user_repo.go", pkgPath: "example.com/repo", src: `package repo
+
+// @Injection(userRepo)
+func NewUserRepo(
+	db *DB, // @Inject(db)
+) *UserRepo {
+	return nil
+}
+`},
+	})
+	assertValidGoSource(t, out)
+
+	alias := packages.Package{Name: "repo", Path: "example.com/repo"}.Alias()
+	for _, want := range []string{
+		"db := " + alias + ".NewDB()",
+		"userRepo := " + alias + ".NewUserRepo(db)",
+		"userRepo: userRepo,",
+		"return ctx.userRepo",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("output missing %q\n--- output ---\n%s", want, out)
+		}
+	}
+	for _, unwanted := range []string{"db *" + alias + ".DB", "db: db,", "return ctx.db", "_ = db"} {
+		if strings.Contains(out, unwanted) {
+			t.Errorf("output should not contain %q\n--- output ---\n%s", unwanted, out)
+		}
 	}
 }
 

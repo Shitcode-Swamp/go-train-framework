@@ -81,9 +81,9 @@ before `InitInjectee`, or worry about wiring them together by hand.
 flags after the token to opt out of parts of the generated code for that
 dependency:
 
-- `no-getter` — don't generate an `AppContext` getter method for it. The
-  field is still populated and wired into the constructor, it's just not
-  exposed via a getter.
+- `no-getter` — keep it out of `AppContext`: no field, no getter. It is
+  still constructed inside `NewAppContext` and passed to everything that
+  `@Inject`s it, it just isn't stored on or exposed by the context.
 
 ```go
 // @Injection(internalCache, no-getter)

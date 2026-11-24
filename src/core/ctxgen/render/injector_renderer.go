@@ -39,7 +39,7 @@ func (r *InjectorRenderer) Assign(injector *injection.Injector) string {
 }
 
 func (r *InjectorRenderer) Getter(injector *injection.Injector) string {
-	if injector.HasFlag(injection.NoGetterFlag) {
+	if !injector.HasGetter() {
 		return ""
 	}
 	fn := lexical.NewFunc(

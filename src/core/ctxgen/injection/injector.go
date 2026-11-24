@@ -61,6 +61,10 @@ func (i *Injector) InitFn() string {
 	return i.initFn
 }
 
+func (i *Injector) HasGetter() bool {
+	return !i.HasFlag(NoGetterFlag)
+}
+
 func (i *Injector) HasFlag(flag string) bool {
 	_, ok := i.flags[flag]
 	return ok
